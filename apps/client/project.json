@@ -1,0 +1,63 @@
+{
+  "name": "client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/client/src",
+  "projectType": "application",
+  "tags": [],
+  "generators": {
+    "@nxext/stencil:component": {
+      "style": "scss"
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@nxext/stencil:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "projectType": "application",
+        "tsConfig": "apps/client/tsconfig.app.json",
+        "configPath": "apps/client/stencil.config.ts",
+        "outputPath": "dist/apps/client"
+      },
+      "configurations": {
+        "production": {
+          "dev": false,
+          "prod": true
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nxext/stencil:serve",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "projectType": "application",
+        "tsConfig": "apps/client/tsconfig.app.json",
+        "configPath": "apps/client/stencil.config.ts",
+        "outputPath": "dist/apps/client"
+      }
+    },
+    "test": {
+      "executor": "@nxext/stencil:test",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "projectType": "application",
+        "tsConfig": "apps/client/tsconfig.app.json",
+        "configPath": "apps/client/stencil.config.ts",
+        "outputPath": "dist/apps/client"
+      }
+    },
+    "e2e": {
+      "executor": "@nxext/stencil:e2e",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "projectType": "application",
+        "tsConfig": "apps/client/tsconfig.app.json",
+        "configPath": "apps/client/stencil.config.ts",
+        "outputPath": "dist/apps/client"
+      }
+    },
+    "lint": {
+      "command": "eslint apps/client/**/*.{ts,tsx}"
+    }
+  }
+}
