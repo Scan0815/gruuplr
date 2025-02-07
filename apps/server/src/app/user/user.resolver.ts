@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { UserDTO } from '../../dtos/user.dto';
 import { AuthResponseDTO } from '../../dtos/auth-response.dto';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/auth.guard';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
 
 @Resolver(() => UserDTO)
@@ -45,7 +45,6 @@ export class UserResolver {
   @Query(() => UserDTO)
   @UseGuards(JwtAuthGuard) // ✅ Nur authentifizierte User können zugreifen
   async me(@CurrentUser() user: UserDTO) {
-    console.log('user', user);
     return user;
   }
 

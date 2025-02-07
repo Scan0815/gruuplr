@@ -13,7 +13,7 @@ import { Message } from '../../schemas/message.schema';
 import * as crypto from 'crypto';
 import { GroupKey } from '../../schemas/group-key.schema';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthWsGuard } from '../auth/auth-ws.guard';
+import { JwtAuthWsGuard } from '../auth/jwt/jwt-auth-ws.guard';
 
 @WebSocketGateway({ cors: { origin: '*' }, transports: ['websocket'] })
 export class GroupChatGateway
