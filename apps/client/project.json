@@ -33,7 +33,18 @@
         "projectType": "application",
         "tsConfig": "apps/client/tsconfig.app.json",
         "configPath": "apps/client/stencil.config.ts",
-        "outputPath": "dist/apps/client"
+        "outputPath": "dist/apps/client",
+        "proxyConfig": "apps/client/proxy.config.json"
+      },
+      "configurations": {
+        "development": {
+          "dev": true,
+          "prod": false
+        },
+        "production": {
+          "dev": false,
+          "prod": true
+        }
       }
     },
     "test": {

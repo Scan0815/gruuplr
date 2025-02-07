@@ -4,6 +4,7 @@
     "outDir": "out-tsc/server",
     "types": ["node"],
     "rootDir": "src",
+    "declaration": true,
     "tsBuildInfoFile": "out-tsc/server/tsconfig.app.tsbuildinfo",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

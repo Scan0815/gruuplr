@@ -8,6 +8,9 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface AppRoot {
     }
+    interface RxdbTest {
+        "userId": string;
+    }
 }
 declare global {
     interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {
@@ -16,15 +19,26 @@ declare global {
         prototype: HTMLAppRootElement;
         new (): HTMLAppRootElement;
     };
+    interface HTMLRxdbTestElement extends Components.RxdbTest, HTMLStencilElement {
+    }
+    var HTMLRxdbTestElement: {
+        prototype: HTMLRxdbTestElement;
+        new (): HTMLRxdbTestElement;
+    };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
+        "rxdb-test": HTMLRxdbTestElement;
     }
 }
 declare namespace LocalJSX {
     interface AppRoot {
     }
+    interface RxdbTest {
+        "userId"?: string;
+    }
     interface IntrinsicElements {
         "app-root": AppRoot;
+        "rxdb-test": RxdbTest;
     }
 }
 export { LocalJSX as JSX };
@@ -32,6 +46,7 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
+            "rxdb-test": LocalJSX.RxdbTest & JSXBase.HTMLAttributes<HTMLRxdbTestElement>;
         }
     }
 }

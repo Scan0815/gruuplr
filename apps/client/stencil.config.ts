@@ -8,7 +8,7 @@ import { webTypesOutputTarget } from '@stencil-community/web-types-output-target
 export const config: Config = {
   globalStyle: 'src/global/app.scss',
   globalScript: 'src/global/app.ts',
-  taskQueue: 'immediate',
+  taskQueue: 'async',
   sourceMap: true,
   outputTargets: [
     {
@@ -23,7 +23,7 @@ export const config: Config = {
     webTypesOutputTarget()
   ],
   devServer: {
-    reloadStrategy: 'hmr',
+    reloadStrategy: 'pageReload',
     basePath: '/',
     initialLoadUrl: '/',
     logRequests: false,

@@ -5,7 +5,7 @@
     "allowUnreachableCode": false,
     "declaration": false,
     "experimentalDecorators": true,
-    "lib": ["dom", "es2015"],
+    "lib": ["dom", "es2015", "ES2021.WeakRef"],
     "moduleResolution": "node",
     "module": "esnext",
     "target": "es2017",
@@ -13,7 +13,7 @@
     "noUnusedParameters": true,
     "jsx": "react",
     "jsxFactory": "h",
-    "outDir": "../../dist/out-tsc",
+    "outDir": "../../dist/out-tsc"
   },
   "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
   "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"],
