@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { GroupKey, GroupKeySchema } from '../../schemas/group-key.schema';
+import { GroupKey, GroupKeySchema } from '@gruuplr/schemas';
 import { GroupChatGateway } from './group-chat.gateway';
 import { MessageModule } from '../message/message.module';
 import { AuthModule } from '../auth/auth.module';

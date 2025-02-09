@@ -9,9 +9,9 @@ import {
 import { Server, Socket } from 'socket.io';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Message } from '../../schemas/message.schema';
+import { Message,GroupKey } from '@gruuplr/schemas';
 import * as crypto from 'crypto';
-import { GroupKey } from '../../schemas/group-key.schema';
+
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthWsGuard } from '../auth/jwt/jwt-auth-ws.guard';
 

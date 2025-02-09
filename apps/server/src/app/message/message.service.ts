@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Message } from '../../schemas/message.schema';
-import { MessageDTO } from '../../dtos/message.dto';
+import { Message } from '@gruuplr/schemas';
+import { MessageDTO } from '@gruuplr/dtos';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()

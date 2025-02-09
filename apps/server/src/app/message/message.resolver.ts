@@ -1,6 +1,6 @@
 import { Resolver, Query, Args } from '@nestjs/graphql';
 import { MessageService } from './message.service';
-import { MessageDTO } from '../../dtos/message.dto';
+import { MessageDTO } from '@gruuplr/dtos';
 
 @Resolver(() => MessageDTO)
 export class MessageResolver {

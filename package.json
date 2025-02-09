@@ -43,7 +43,8 @@
   },
   "workspaces": [
     "packages/*",
-    "apps/*"
+    "apps/*",
+    "libs/*"
   ],
   "dependencies": {
     "@apollo/server": "^4.11.3",
@@ -74,6 +75,7 @@
     "graphql-subscriptions": "^3.0.0",
     "graphql-tools": "^9.0.11",
     "graphql-ws": "^6.0.3",
+    "jsonc-eslint-parser": "^2.4.0",
     "mongoose": "^8.10.0",
     "msgpack5": "^6.0.2",
     "passport-jwt": "^4.0.1",

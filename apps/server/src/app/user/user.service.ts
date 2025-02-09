@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../../schemas/user.schema';
-import { UserDTO } from '../../dtos/user.dto';
+import { User } from '@gruuplr/schemas';
+import { UserDTO } from '@gruuplr/dtos';
 import { plainToInstance } from 'class-transformer';
-import { verifyPassword } from '../auth/auth.utils';
+import { verifyPassword } from '@gruuplr/utilities';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UserService {

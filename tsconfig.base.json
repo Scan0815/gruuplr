@@ -1,21 +1,27 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "declarationMap": true,
-    "declaration": false,
-    "emitDeclarationOnly": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "lib": ["es2022","dom"],
-    "module": "esnext",
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,
     "moduleResolution": "node",
-    "noEmitOnError": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "esnext",
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "lib": ["es2022", "dom"],
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "skipLibCheck": true,
     "strict": true,
-    "target": "es2022"
+    "paths": {
+      "@gruuplr/dtos": ["libs/dtos/src/index.ts"],
+      "@gruuplr/schemas": ["libs/schemas/src/index.ts"],
+      "@gruuplr/utilities": ["libs/utilities/src/index.ts"]
+    }
   }
 }

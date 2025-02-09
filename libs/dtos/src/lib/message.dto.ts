@@ -1,9 +1,10 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Message } from '@gruuplr/schemas';
 import { OmitType } from '@nestjs/graphql';
-import { User } from '../schemas/user.schema';
 
 @ObjectType()
-export class UserDTO extends OmitType(User, ['_id', 'password'] as const) {
+export class MessageDTO extends OmitType(Message, ['_id'] as const) {
+  // ✅ DTO aus Schema generieren
   @Field(() => ID)
   override id!: string;
 }

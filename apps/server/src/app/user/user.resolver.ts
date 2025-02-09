@@ -1,10 +1,9 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { UserService } from './user.service';
-import { UserDTO } from '../../dtos/user.dto';
-import { AuthResponseDTO } from '../../dtos/auth-response.dto';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
+import { AuthResponseDTO, UserDTO } from '@gruuplr/dtos';
 
 @Resolver(() => UserDTO)
 export class UserResolver {
@@ -45,6 +44,10 @@ export class UserResolver {
   @Query(() => UserDTO)
   @UseGuards(JwtAuthGuard) // ✅ Nur authentifizierte User können zugreifen
   async me(@CurrentUser() user: UserDTO) {
+    // ✅ `createdAt` und `updatedAt` in `Date`-Objekte umwandeln
+    user.createdAt = new Date(user.createdAt);
+    user.updatedAt = new Date(user.updatedAt);
+    console.log('me', user);
     return user;
   }
 

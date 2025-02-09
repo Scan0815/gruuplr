@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { hashPassword } from '../app/auth/auth.utils';
+import { hashPassword } from '@gruuplr/utilities';
 import { Expose, Transform } from 'class-transformer';
 
 @Schema({ timestamps: true }) // ✅ Mongoose Schema
