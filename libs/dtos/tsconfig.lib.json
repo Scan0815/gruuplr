@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "rootDir": "./src",
+    "target": "es2021",
+    "module": "CommonJS",
+    "declaration": true, // ✅ Muss aktiviert sein
+    "strictPropertyInitialization": false // for behaviour like in nestjs
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
