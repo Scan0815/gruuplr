@@ -17,6 +17,7 @@
     "@nx/node": "20.4.0",
     "@nx/web": "20.4.0",
     "@nx/webpack": "20.4.0",
+    "@stencil-community/eslint-plugin": "^0.10.0",
     "@stencil-community/web-types-output-target": "^1.0.2",
     "@stencil/core": "^4.25.1",
     "@stencil/sass": "3.0.7",
