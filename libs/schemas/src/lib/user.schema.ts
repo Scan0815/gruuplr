@@ -14,9 +14,9 @@ export class User extends Document {
   }) // ✅ Falls `_id` existiert, in `id` umwandeln
   override id!: string;
 
+  @Field()
   @Prop({ required: true, unique: true })
   @Expose()
-  @Field()
   username!: string;
 
   @Prop({ required: true })

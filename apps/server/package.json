@@ -9,6 +9,9 @@
     "targets": {
       "build": {
         "executor": "nx:run-commands",
+        "dependsOn": [
+          "build","codegen"
+        ],
         "options": {
           "command": "webpack-cli build",
           "args": [
@@ -27,7 +30,7 @@
         "executor": "@nx/js:node",
         "defaultConfiguration": "development",
         "dependsOn": [
-          "build"
+          "build","codegen"
         ],
         "options": {
           "buildTarget": "server:build",
@@ -35,12 +38,16 @@
         },
         "configurations": {
           "development": {
-            "buildTarget": "server:build:development"
+            "buildTarget": "server:build:development",
+            "watch": true
           },
           "production": {
             "buildTarget": "server:build:production"
           }
         }
+      },
+      "codegen": {
+        "command": "graphql-codegen"
       },
       "test": {
         "options": {

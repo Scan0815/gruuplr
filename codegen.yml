@@ -1,0 +1,7 @@
+overwrite: true
+schema: "schema.graphql" # 💡 Alternativ: "./schema.graphql" falls lokal gespeichert
+generates:
+  apps/client/src/generated/graphql.ts:
+    plugins:
+      - "typescript" # 💡 Generiert TypeScript-Typen aus dem Schema
+      - "typescript-operations" # 💡 Erstellt Typen für Queries & Mutationen

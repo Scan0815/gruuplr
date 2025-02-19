@@ -1,0 +1,63 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthResponseDTO {
+  token: String!
+  user: UserDTO!
+}
+
+input CreateGroupInput {
+  description: String!
+  name: String!
+}
+
+input CreateUserInput {
+  password: String!
+  username: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type GroupDTO {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  members: [String!]
+  name: String!
+  updatedAt: DateTime!
+}
+
+type MessageDTO {
+  createdAt: DateTime!
+  encryptedMessage: String!
+  groupId: String!
+  id: ID!
+  keyIndex: Float!
+  updatedAt: DateTime!
+}
+
+type Mutation {
+  createGroup(input: CreateGroupInput!): GroupDTO!
+  joinGroup(groupId: String!): GroupDTO!
+  login(input: CreateUserInput!): AuthResponseDTO!
+  register(input: CreateUserInput!): AuthResponseDTO!
+}
+
+type Query {
+  getGroups: [GroupDTO!]!
+  getMessages(groupId: String!, since: Float): [MessageDTO!]!
+  getUser(id: String!): UserDTO!
+  me: UserDTO!
+}
+
+type UserDTO {
+  createdAt: DateTime!
+  id: ID!
+  role: String!
+  updatedAt: DateTime!
+  username: String!
+}

@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Port number to be killed
-PORT=3335
-
+FRONTEND_PORT=3335
+BACKEND_PORT=3000
 # Kill processes using the specified port
-kill -9 $(lsof -i:$PORT -t) 2> /dev/null
-
+kill -9 $(lsof -i:$FRONTEND_PORT -t) 2> /dev/null
+kill -9 $(lsof -i:$BACKEND_PORT -t) 2> /dev/null
 # Check if the kill command was successful
 if [ $? -eq 0 ]; then
-  echo "Processes using port $PORT have been killed."
+  echo "Processes using port $FRONTEND_PORT,$BACKEND_PORT have been killed."
 else
-  echo "No processes were found using port $PORT or failed to kill them."
+  echo "No processes were found using port $FRONTEND_PORT,$BACKEND_PORT or failed to kill them."
 fi
 
 # Run the nx command

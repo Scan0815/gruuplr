@@ -7,6 +7,8 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
+import { join } from 'path';
+import { GroupModule } from './group/group.module';
 
 @Module({
   imports: [
@@ -15,13 +17,15 @@ import { UserModule } from './user/user.module';
     }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
-      autoSchemaFile: true, // Automatische Generierung des Schemas
+      autoSchemaFile: join(process.cwd(), 'schema.graphql'), // 📌 Automatische Schema-Generierung
+      sortSchema: true, // (optional) sortiert das Schema für bessere Lesbarkeit
       playground: true, // GraphQL Playground aktivieren
     }),
     DatabaseModule,
     GroupChatModule,
     MessageModule,
     UserModule,
+    GroupModule,
     AuthModule
   ]
 })

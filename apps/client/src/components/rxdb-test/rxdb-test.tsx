@@ -8,13 +8,13 @@ import { ReplicationService } from '../../services/replication.service';
   styleUrl: 'rxdb-test.scss',
 })
 export class RxDbTest implements ComponentInterface {
-  @State() text: string;
+  @State() text: string = '';
   @Prop() userId: string = '1';
   @State() messages: any[] = [];
   private replicationId = this.userId === '1' ? '2' : '1';
 
-  private formEl: HTMLFormElement;
-  private textAreaEl: HTMLIonTextareaElement;
+  private formEl!: HTMLFormElement;
+  private textAreaEl!: HTMLIonTextareaElement;
   private rxDb: RxDBService = new RxDBService();
   private replicationService: ReplicationService =  new ReplicationService(this.replicationId,this.syncMessages.bind(this));
   async componentDidLoad() {
@@ -24,12 +24,12 @@ export class RxDbTest implements ComponentInterface {
   }
 
   addText(ev:IonTextareaCustomEvent<string>){
-    this.text = ev.target.value;
+    this.text = ev.target.value as string;
   }
 
   async createMessage(){
     if(this.text === '') return;
-    await this.rxDb.addMessage(this.text,this.userId);
+    await this.rxDb.addMessage(this.text,this.userId,"test");
     await this.replicationService.pushMessage(this.text,this.userId);
     this.formEl.reset();
     this.textAreaEl.value = '';
@@ -60,7 +60,7 @@ export class RxDbTest implements ComponentInterface {
           return <ion-item>{message.userId} - {message.id}/{message.text} - {message.updatedAt}</ion-item>
         })}
       </ion-list>
-      <form ref={(ref: HTMLFormElement) => this.formEl = ref}>
+      <form ref={(el: HTMLFormElement | undefined) => this.formEl = el as HTMLFormElement}>
         <ion-textarea fill="outline" shape="round" label="Label:" label-placement="floating"
                       ref={(ref: HTMLIonTextareaElement) => this.textAreaEl = ref}
                       onIonInput={(ev: IonTextareaCustomEvent<string>) => this.addText(ev)}></ion-textarea>

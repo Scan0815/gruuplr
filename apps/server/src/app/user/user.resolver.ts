@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
-import { AuthResponseDTO, UserDTO } from '@gruuplr/dtos';
+import { AuthResponseDTO, CreateGroupInput, CreateUserInput, UserDTO } from '@gruuplr/dtos';
 
 @Resolver(() => UserDTO)
 export class UserResolver {
@@ -13,10 +13,9 @@ export class UserResolver {
   // ✅ Benutzer registrieren (Mutation)
   @Mutation(() => AuthResponseDTO)
   async register(
-    @Args('username') username: string,
-    @Args('password') password: string,
+    @Args('input') input: CreateUserInput,
   ): Promise<AuthResponseDTO> {
-    const user =  await this.userService.createUser(username, password);
+    const user =  await this.userService.createUser(input);
     const token = this.userService.signUser({...user})
     return { token, user };
   }
@@ -24,14 +23,13 @@ export class UserResolver {
   // ✅ Login (Mutation) -> Gibt JWT zurück
   @Mutation(() => AuthResponseDTO)
   async login(
-    @Args('username') username: string,
-    @Args('password') password: string,
+    @Args('input') input: CreateUserInput,
   ): Promise<AuthResponseDTO> {
-    const token = await this.userService.validateUser(username, password);
+    const token = await this.userService.validateUser(input.username,input.password) as string;
     if (!token) {
       throw new Error('Invalid credentials');
     }
-    const user = await this.userService.getUserByUsername(username) as UserDTO;
+    const user = await this.userService.getUserByUsername(input.username) as UserDTO;
     return { token, user };
   }
 

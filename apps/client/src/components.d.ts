@@ -8,6 +8,19 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface AppRoot {
     }
+    interface ChatDefault {
+    }
+    interface ChatView {
+        "groupId": string;
+    }
+    interface GroupList {
+    }
+    interface PageChat {
+    }
+    interface PageLogin {
+    }
+    interface PageRegister {
+    }
     interface RxdbTest {
         "userId": string;
     }
@@ -19,6 +32,42 @@ declare global {
         prototype: HTMLAppRootElement;
         new (): HTMLAppRootElement;
     };
+    interface HTMLChatDefaultElement extends Components.ChatDefault, HTMLStencilElement {
+    }
+    var HTMLChatDefaultElement: {
+        prototype: HTMLChatDefaultElement;
+        new (): HTMLChatDefaultElement;
+    };
+    interface HTMLChatViewElement extends Components.ChatView, HTMLStencilElement {
+    }
+    var HTMLChatViewElement: {
+        prototype: HTMLChatViewElement;
+        new (): HTMLChatViewElement;
+    };
+    interface HTMLGroupListElement extends Components.GroupList, HTMLStencilElement {
+    }
+    var HTMLGroupListElement: {
+        prototype: HTMLGroupListElement;
+        new (): HTMLGroupListElement;
+    };
+    interface HTMLPageChatElement extends Components.PageChat, HTMLStencilElement {
+    }
+    var HTMLPageChatElement: {
+        prototype: HTMLPageChatElement;
+        new (): HTMLPageChatElement;
+    };
+    interface HTMLPageLoginElement extends Components.PageLogin, HTMLStencilElement {
+    }
+    var HTMLPageLoginElement: {
+        prototype: HTMLPageLoginElement;
+        new (): HTMLPageLoginElement;
+    };
+    interface HTMLPageRegisterElement extends Components.PageRegister, HTMLStencilElement {
+    }
+    var HTMLPageRegisterElement: {
+        prototype: HTMLPageRegisterElement;
+        new (): HTMLPageRegisterElement;
+    };
     interface HTMLRxdbTestElement extends Components.RxdbTest, HTMLStencilElement {
     }
     var HTMLRxdbTestElement: {
@@ -27,17 +76,42 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
+        "chat-default": HTMLChatDefaultElement;
+        "chat-view": HTMLChatViewElement;
+        "group-list": HTMLGroupListElement;
+        "page-chat": HTMLPageChatElement;
+        "page-login": HTMLPageLoginElement;
+        "page-register": HTMLPageRegisterElement;
         "rxdb-test": HTMLRxdbTestElement;
     }
 }
 declare namespace LocalJSX {
     interface AppRoot {
     }
+    interface ChatDefault {
+    }
+    interface ChatView {
+        "groupId": string;
+    }
+    interface GroupList {
+    }
+    interface PageChat {
+    }
+    interface PageLogin {
+    }
+    interface PageRegister {
+    }
     interface RxdbTest {
         "userId"?: string;
     }
     interface IntrinsicElements {
         "app-root": AppRoot;
+        "chat-default": ChatDefault;
+        "chat-view": ChatView;
+        "group-list": GroupList;
+        "page-chat": PageChat;
+        "page-login": PageLogin;
+        "page-register": PageRegister;
         "rxdb-test": RxdbTest;
     }
 }
@@ -46,6 +120,12 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
+            "chat-default": LocalJSX.ChatDefault & JSXBase.HTMLAttributes<HTMLChatDefaultElement>;
+            "chat-view": LocalJSX.ChatView & JSXBase.HTMLAttributes<HTMLChatViewElement>;
+            "group-list": LocalJSX.GroupList & JSXBase.HTMLAttributes<HTMLGroupListElement>;
+            "page-chat": LocalJSX.PageChat & JSXBase.HTMLAttributes<HTMLPageChatElement>;
+            "page-login": LocalJSX.PageLogin & JSXBase.HTMLAttributes<HTMLPageLoginElement>;
+            "page-register": LocalJSX.PageRegister & JSXBase.HTMLAttributes<HTMLPageRegisterElement>;
             "rxdb-test": LocalJSX.RxdbTest & JSXBase.HTMLAttributes<HTMLRxdbTestElement>;
         }
     }

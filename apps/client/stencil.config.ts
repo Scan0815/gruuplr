@@ -16,11 +16,11 @@ export const config: Config = {
       // comment the following line to disable service workers in production
       serviceWorker: null
     },
+    webTypesOutputTarget({ outFile: './web-types/web-types.json' })
   ],
   plugins: [
     sass(),
-    nodePolyfills(),
-    webTypesOutputTarget()
+    nodePolyfills()
   ],
   devServer: {
     reloadStrategy: 'pageReload',

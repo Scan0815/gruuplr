@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { Model } from 'mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@gruuplr/schemas';
-import { UserDTO } from '@gruuplr/dtos';
+import { CreateUserInput, UserDTO } from '@gruuplr/dtos';
 import { plainToInstance } from 'class-transformer';
 import { verifyPassword } from '@gruuplr/utilities';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,12 +15,14 @@ export class UserService {
   ) {}
 
   // ✅ Benutzer erstellen (Registrierung)
-  async createUser(username: string, password: string): Promise<UserDTO> {
-    const existingUser = await this.userModel.findOne({ username }).exec();
+  async createUser(input:CreateUserInput): Promise<UserDTO> {
+    console.log('input', input);
+
+    const existingUser = await this.userModel.findOne({ username: input.username }).exec();
     if (existingUser) {
       throw new BadRequestException('Username already exists');
     }
-    const newUser = new this.userModel({ username , password:password?.trim()});
+    const newUser = new this.userModel(input);
     const savedUser = await newUser.save();
     return  plainToInstance(UserDTO, savedUser, { excludeExtraneousValues: true });
   }
