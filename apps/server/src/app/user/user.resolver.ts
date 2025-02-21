@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
-import { AuthResponseDTO, CreateGroupInput, CreateUserInput, UserDTO } from '@gruuplr/dtos';
+import { AuthResponseDTO, CreateUserInput, UserDTO } from '@gruuplr/dtos';
 
 @Resolver(() => UserDTO)
 export class UserResolver {

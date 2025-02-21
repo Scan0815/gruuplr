@@ -9,6 +9,7 @@ import { ChatSocketService } from '../../services/chat-socket.service';
 })
 export class AppRoot implements ComponentInterface {
   @State() isLoggedIn: boolean = false;
+  @State() messages: any[] = [];
   private accountService: AccountService = AccountService.getInstance();
   private chatSocketService: ChatSocketService|null = null;
 
@@ -17,6 +18,7 @@ export class AppRoot implements ComponentInterface {
       console.log('Logged in:', isLoggedIn);
       this.isLoggedIn = isLoggedIn;
       if(this.isLoggedIn) {
+        console.log("token",this.accountService.getToken() as string);
         this.chatSocketService = ChatSocketService.getInstance(this.accountService.getToken() as string);
       }else if(this.chatSocketService){
         this.chatSocketService.disconnect();

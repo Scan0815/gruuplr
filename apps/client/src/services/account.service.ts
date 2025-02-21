@@ -1,14 +1,16 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { UserDTO } from '@gruuplr/dtos';
 
 export class AccountService {
   private static instance: AccountService;
   private tokenSubject: BehaviorSubject<string | null>;
-
+  private userSubject: BehaviorSubject<UserDTO | null>;
   // Private constructor to enforce singleton usage.
   private constructor() {
     const token = localStorage.getItem('token');
     this.tokenSubject = new BehaviorSubject<string | null>(token);
+    this.userSubject = new BehaviorSubject<UserDTO | null>(null);
   }
 
   /**
@@ -30,6 +32,15 @@ export class AccountService {
     this.tokenSubject.next(token);
   }
 
+  public setUser(user: any): void {
+    localStorage.setItem('user', JSON.stringify(user));
+    this.userSubject.next(user);
+  }
+
+  public getUser(): UserDTO|null {
+    return JSON.parse(localStorage.getItem('user') as string) as UserDTO;
+  }
+
   /**
    * Retrieves the current token.
    * @returns The stored token or null if not set.
@@ -43,7 +54,9 @@ export class AccountService {
    */
   public clearToken(): void {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.tokenSubject.next(null);
+    this.userSubject.next(null);
   }
 
   /**

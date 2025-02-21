@@ -1,4 +1,5 @@
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -8,14 +9,17 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Message,GroupKey } from '@gruuplr/schemas';
+import { Model, Types } from 'mongoose';
+import { GroupKey, Message } from '@gruuplr/schemas';
 import * as crypto from 'crypto';
 
-import { UseGuards } from '@nestjs/common';
+import { UseFilters, UseGuards } from '@nestjs/common';
 import { JwtAuthWsGuard } from '../auth/jwt/jwt-auth-ws.guard';
+import { WsExceptionsFilter } from '../../filters/WsExceptions.filter';
+import { WsGroupException } from '../../exceptions/WsGroupException';
 
 @WebSocketGateway({ cors: { origin: '*' }, transports: ['websocket'] })
+@UseFilters(new WsExceptionsFilter()) // Apply the filter at the gateway level
 export class GroupChatGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -35,36 +39,54 @@ export class GroupChatGateway
     console.log(`❌ Client getrennt: ${client.id}`);
   }
 
+  // Join group handler
+  @UseGuards(JwtAuthWsGuard)
+  @SubscribeMessage('join-group')
+  joinGroup(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { groupId: string }
+  ) {
+    console.log(client, 'Join group', data.groupId);
+    if (!data.groupId) {
+      throw new WsGroupException('Group id not provided',"GROUP_ID_MISSING");
+    }
+    client.join(data.groupId);
+    console.log(`Client ${client.id} joined group ${data.groupId}`);
+  }
+
   // Nachricht speichern & verteilen
   @UseGuards(JwtAuthWsGuard)
   @SubscribeMessage('send-message')
   async sendMessage(
-    client: Socket,
     @MessageBody()
-    {
-      groupId,
-      encryptedPayload,
-    }: {
+    data: {
       groupId: string;
-      encryptedPayload: Buffer;
+      userId: string;
+      encryptedMessage: string;
+      keyId: string;
     }
   ) {
-    const message = new this.messageModel({
-      groupId,
-      encryptedMessage: encryptedPayload, // Speichern als Binär
-      keyIndex: 1,
-    });
 
-    await message.save(); // Speichert die Nachricht in MongoDB
+    // convert string to ObjectId
+    const groupId = new Types.ObjectId(data.groupId);
+    const userId = new Types.ObjectId(data.userId);
+    const keyId = new Types.ObjectId(data.keyId);
 
-    this.server.to(groupId).emit('receive-message', message);
+    //generate new message
+    const message = new this.messageModel(Object.assign(data,{groupId,userId,keyId}));
+
+    // Save message to MongoDB
+    await message.save();
+
+    //message to all clients in the group
+    this.server.to(data.groupId).emit('receive-message', message);
   }
 
   // Verpasste Nachrichten abrufen
   @UseGuards(JwtAuthWsGuard)
   @SubscribeMessage('get-messages-since')
   async getMessagesSince(
-    client: Socket,
+    @ConnectedSocket() client: Socket,
     @MessageBody() { groupId, since }: { groupId: string; since: number }
   ) {
     const missedMessages = await this.messageModel
@@ -80,7 +102,7 @@ export class GroupChatGateway
   @UseGuards(JwtAuthWsGuard)
   @SubscribeMessage('rotate-group-key')
   async rotateGroupKey(
-    client: Socket,
+    @ConnectedSocket() client: Socket,
     @MessageBody() { groupId }: { groupId: string }
   ) {
     const newKey = crypto.randomBytes(32);

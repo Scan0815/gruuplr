@@ -1,5 +1,7 @@
 import { Component, h, Prop, State, Watch } from '@stencil/core';
 import { RxDBService } from '../../../services/rxdb.service';
+import { ChatSocketService } from '../../../services/chat-socket.service';
+import { AccountService } from '../../../services/account.service';
 
 @Component({
   tag: 'chat-view',
@@ -9,6 +11,8 @@ export class ChatView {
   @Prop() groupId!: string;
   @State() messages: any[] = [];
   @State() newMessage: string = '';
+
+  private socketService: ChatSocketService = ChatSocketService.getInstance(AccountService.getInstance().getToken() as string);
 
   private rxdbService: RxDBService = new RxDBService();
 
@@ -36,8 +40,14 @@ export class ChatView {
   async sendMessage(event: Event) {
     event.preventDefault();
     if (!this.newMessage || !this.groupId) return;
-    const userId = localStorage.getItem('userId') || '1';
+    const userId = AccountService.getInstance().getUser()?.id || '1';
     await this.rxdbService.addMessage(this.newMessage, userId, this.groupId);
+    this.socketService.sendMessage({
+      groupId:this.groupId,
+      userId:userId,
+      encryptedMessage:this.newMessage,
+      keyId: '1'
+    });
     this.newMessage = '';
     await this.loadMessages();
   }

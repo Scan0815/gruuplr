@@ -1,6 +1,7 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
+import { WsTokenException } from '../../../exceptions/WsTokenException';
 
 @Injectable()
 export class JwtAuthWsGuard implements CanActivate {
@@ -8,14 +9,10 @@ export class JwtAuthWsGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const client: Socket = context.switchToWs().getClient();
-
     // ✅ 1. Token aus dem Handshake-Query oder den Headers holen
-    const token =
-      client.handshake.headers.authorization?.split(' ')[1] || // Falls Token im Header ist
-      client.handshake.query.token as string; // Falls Token in der URL übergeben wurde
-
+    const token = client.handshake.auth.token as string; // Falls Token in der URL übergeben wurde
     if (!token) {
-      throw new UnauthorizedException('Missing authentication token');
+      throw new WsTokenException('Custom forbidden: Missing authentication token',"TOKEN_MISSING");
     }
 
     try {
@@ -23,7 +20,7 @@ export class JwtAuthWsGuard implements CanActivate {
       client.data.user = this.jwtService.verify(token);
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Invalid or expired token');
+      throw new WsTokenException('Custom forbidden: Missing authentication token',"TOKEN_INVALID");
     }
   }
 }

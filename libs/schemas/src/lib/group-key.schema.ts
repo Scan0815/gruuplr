@@ -1,21 +1,26 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { MessageSchema } from './message.schema';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
+import { Field, ID } from '@nestjs/graphql';
+import { Group } from './group.schema';
 
 @Schema({ timestamps: true }) // Automatisch erstellte Felder für Erstellungs- und Aktualisierungsdatum
 export class GroupKey extends Document {
-  @Prop({ required: true })
+  @Field(() => ID)
   @Expose()
-  groupId!: string;
+  @Transform(({ obj }) => obj._id?.toString() ?? obj.id?.toString())
+  override id!: string;
+
+  @Prop({ type: Types.ObjectId, ref: Group.name, required: true })
+  @Field(() => ID)
+  @Expose()
+  @Transform(({ value }) => value?.toString())
+  groupId!: Types.ObjectId;
 
   @Prop({ required: true, type: Buffer })
   @Expose() // Gruppen-Key als Binär speichern
   key!: Buffer;
-
-  @Prop({ required: true })
-  @Expose()
-  keyIndex!: number;
 
   @Prop()
   @Expose()

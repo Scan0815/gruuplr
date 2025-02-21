@@ -1,16 +1,16 @@
+// File: libs/schemas/src/lib/group.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Expose, Transform } from 'class-transformer';
+import { GroupMember, GroupMemberSchema } from './group-member.schema';
 
 @Schema({ timestamps: true })
 @ObjectType()
 export class Group extends Document {
   @Field(() => ID)
   @Expose()
-  @Transform(({ obj }) => {
-    return obj._id?.toString() ?? obj.id?.toString();
-  })
+  @Transform(({ obj }) => obj._id?.toString() ?? obj.id?.toString())
   override id!: string;
 
   @Prop({ required: true, unique: true })
@@ -23,11 +23,11 @@ export class Group extends Document {
   @Field({ nullable: true })
   description?: string;
 
-  // Array of user IDs (as strings) representing group members
-  @Prop({ type: [String], default: [] })
+  // Members stored as an array of GroupMember subdocuments.
+  @Prop({ type: [GroupMemberSchema], default: [] })
   @Expose()
-  @Field(() => [String], { nullable: true })
-  members?: string[];
+  @Field(() => [GroupMember], { nullable: true })
+  members!: GroupMember[];
 
   @Field()
   @Expose()

@@ -4,15 +4,14 @@ export class ChatSocketService {
   private static instance: ChatSocketService;
   public socket: Socket;
 
-  // Private constructor ensures a singleton instance.
   private constructor(token: string) {
+    console.log("socket token",token);
     this.socket = io('http://localhost:3000', {
       transports: ['websocket'],
       auth: { token },
     });
   }
 
-  // Get or create the singleton instance.
   public static getInstance(token: string): ChatSocketService {
     if (!ChatSocketService.instance) {
       ChatSocketService.instance = new ChatSocketService(token);
@@ -21,24 +20,42 @@ export class ChatSocketService {
   }
 
   /**
-   * Sends a message as a JSON object. The message should include all
-   * necessary fields (e.g. groupId, encryptedPayload, keyIndex, etc.)
+   * Join a single group.
    */
-  public sendMessage(messageData: any) {
+  public joinGroup(groupId: string): void {
+    this.socket.emit('join-group', {groupId});
+  }
+
+  /**
+   * Join multiple groups.
+   */
+  public joinGroups(groupIds: string[]): void {
+    console.log('Joining groups:', groupIds);
+    groupIds.forEach((groupId) => this.joinGroup(groupId));
+  }
+
+  /**
+   * Register a callback for incoming messages.
+   */
+  public onMessage(callback: (message: any) => void): void {
+    this.socket.on('receive-message', callback);
+  }
+
+  public onErrorMessage(callback: (message: any) => void): void {
+    this.socket.on('error', callback);
+  }
+
+  /**
+   * Send a message.
+   */
+  public sendMessage(messageData: any): void {
     this.socket.emit('send-message', messageData);
   }
 
   /**
-   * Registers a callback for incoming messages.
+   * Disconnect the socket.
    */
-  public onMessage(callback: (message: any) => void) {
-    this.socket.on('receive-message', callback);
-  }
-
-  /**
-   * Disconnects the socket (e.g. on logout).
-   */
-  public disconnect() {
+  public disconnect(): void {
     this.socket.disconnect();
     ChatSocketService.instance = undefined as any;
   }

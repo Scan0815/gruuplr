@@ -2,9 +2,10 @@ import { Component, ComponentInterface, h, State } from '@stencil/core';
 import { request } from 'graphql-request';
 import { IonInputCustomEvent } from '@ionic/core';
 import { gql } from 'graphql-tag';
-import { Mutation, MutationRegisterArgs } from '../../../generated/graphql';
+import { Mutation } from '../../../generated/graphql';
 import { RouterNavigate } from '../../../utilities/RouterNavigate';
 import { AccountService } from '../../../services/account.service';
+import { CreateUserInput } from '@gruuplr/dtos';
 
 @Component({
   tag: 'page-register',
@@ -71,16 +72,17 @@ export class PageRegister implements ComponentInterface {
 
 
     try {
-      const response = await request<Mutation,MutationRegisterArgs>(
+      const response = await request<Mutation,CreateUserInput>(
         'http://localhost:3000/graphql',
         REGISTER_MUTATION,
-        {input:{
+        {
           username: this.username,
           password: this.password,
-        }}
+        }
       );
       console.log(response);
       AccountService.getInstance().setToken(response.register.token);
+      AccountService.getInstance().setUser(response.register.user);
       await RouterNavigate('/chat');
     } catch (error) {
       this.errorMessage = 'Registrierung fehlgeschlagen!';
