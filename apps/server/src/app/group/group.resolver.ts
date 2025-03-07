@@ -13,23 +13,17 @@ export class GroupResolver {
   @Mutation(() => GroupDTO)
   @UseGuards(JwtAuthGuard)
   async createGroup(
+    @CurrentUser() user: UserDTO,
     @Args('input') input: CreateGroupInput,
   ): Promise<GroupDTO> {
-    return this.groupService.createGroup(input);
-  }
-
-  @Mutation(() => GroupDTO)
-  @UseGuards(JwtAuthGuard)
-  async joinGroup(
-    @Args('groupId') groupId: string,
-    @CurrentUser() user: UserDTO
-  ): Promise<GroupDTO> {
-    return this.groupService.joinGroup(groupId, user.id);
+    return this.groupService.createGroup(input,user.id);
   }
 
   @Query(() => [GroupDTO])
   @UseGuards(JwtAuthGuard)
-  async getGroups(): Promise<GroupDTO[]> {
-    return this.groupService.getGroups();
+  async getGroupsForUser(
+    @CurrentUser() user: UserDTO,
+  ): Promise<GroupDTO[]> {
+    return this.groupService.getGroupsForUser(user.id);
   }
 }

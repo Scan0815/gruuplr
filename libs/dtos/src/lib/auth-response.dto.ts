@@ -6,6 +6,9 @@ export class AuthResponseDTO {
   @Field()
   token!: string;
 
+  @Field()
+  refreshToken!: string;
+
   @Field(() => UserDTO)
   user!: UserDTO;
 }

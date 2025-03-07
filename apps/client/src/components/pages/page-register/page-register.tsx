@@ -1,11 +1,11 @@
 import { Component, ComponentInterface, h, State } from '@stencil/core';
-import { request } from 'graphql-request';
 import { IonInputCustomEvent } from '@ionic/core';
 import { gql } from 'graphql-tag';
 import { Mutation } from '../../../generated/graphql';
 import { RouterNavigate } from '../../../utilities/RouterNavigate';
 import { AccountService } from '../../../services/account.service';
 import { CreateUserInput } from '@gruuplr/dtos';
+import { GraphQLService } from '../../../services/graphql/graphql.service';
 
 @Component({
   tag: 'page-register',
@@ -19,6 +19,9 @@ export class PageRegister implements ComponentInterface {
   @State() passwordStrength: number = 0; // 0 - 1 (für Fortschrittsbalken)
   @State() passwordColor: string = 'danger'; // Farbe für `ion-progress-bar`
   @State() isFormValid: boolean = false;
+
+  private graphQLService: GraphQLService = GraphQLService.getInstance();
+  private accountService: AccountService = AccountService.getInstance();
 
   /**
    * Überprüft, wie sicher das Passwort ist (0-100%)
@@ -57,32 +60,31 @@ export class PageRegister implements ComponentInterface {
     if (!this.isFormValid) return;
 
     const REGISTER_MUTATION = gql`
-        mutation Register($username: String!, $password: String!) {
-            register(input: {username: $username, password: $password}) {
-                token
-                user {
-                    id
-                    username
-                    role
-                    createdAt
-                }
-            }
+      mutation Register($username: String!, $password: String!) {
+        register(input: { username: $username, password: $password }) {
+          token
+          refreshToken
+          user {
+            id
+            username
+            role
+            createdAt
+          }
         }
+      }
     `;
 
-
     try {
-      const response = await request<Mutation,CreateUserInput>(
-        'http://localhost:3000/graphql',
-        REGISTER_MUTATION,
-        {
-          username: this.username,
-          password: this.password,
-        }
-      );
+      const response = await this.graphQLService.request<
+        Mutation,
+        CreateUserInput
+      >('http://localhost:3000/graphql', REGISTER_MUTATION, {
+        username: this.username,
+        password: this.password,
+      });
       console.log(response);
-      AccountService.getInstance().setToken(response.register.token);
-      AccountService.getInstance().setUser(response.register.user);
+      this.accountService.setTokens(response.register.token, response.register.refreshToken);
+      this.accountService.setUser(response.register.user);
       await RouterNavigate('/chat');
     } catch (error) {
       this.errorMessage = 'Registrierung fehlgeschlagen!';
@@ -129,7 +131,11 @@ export class PageRegister implements ComponentInterface {
               </ion-item>
 
               {/* 🔥 Fortschrittsbalken für Passwort-Sicherheit */}
-              <ion-progress-bar value={this.passwordStrength} color={this.passwordColor} class="password-bar"></ion-progress-bar>
+              <ion-progress-bar
+                value={this.passwordStrength}
+                color={this.passwordColor}
+                class="password-bar"
+              ></ion-progress-bar>
 
               <ion-item>
                 <ion-input

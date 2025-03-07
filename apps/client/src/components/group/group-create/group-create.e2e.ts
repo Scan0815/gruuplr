@@ -1,20 +1,20 @@
 import { newE2EPage } from '@stencil/core/testing';
 
-describe('rxdb-test', () => {
+describe('group-create', () => {
   it('renders', async () => {
     const page = await newE2EPage();
 
-    await page.setContent('<rxdb-test></rxdb-test>');
-    const element = await page.find('rxdb-test');
+    await page.setContent('<group-create></group-create>');
+    const element = await page.find('group-create');
     expect(element).toHaveClass('hydrated');
   });
 
   it('renders changes to the name data', async () => {
     const page = await newE2EPage();
 
-    await page.setContent('<rxdb-test></rxdb-test>');
-    const component = await page.find('rxdb-test');
-    const element = await page.find('rxdb-test >>> div');
+    await page.setContent('<group-create></group-create>');
+    const component = await page.find('group-create');
+    const element = await page.find('group-create >>> div');
     expect(element.textContent).toEqual(`Hello, World! I'm `);
 
     component.setProperty('first', 'James');

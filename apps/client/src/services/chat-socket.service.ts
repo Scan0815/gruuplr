@@ -3,9 +3,7 @@ import { io, Socket } from 'socket.io-client';
 export class ChatSocketService {
   private static instance: ChatSocketService;
   public socket: Socket;
-
   private constructor(token: string) {
-    console.log("socket token",token);
     this.socket = io('http://localhost:3000', {
       transports: ['websocket'],
       auth: { token },
@@ -24,6 +22,14 @@ export class ChatSocketService {
    */
   public joinGroup(groupId: string): void {
     this.socket.emit('join-group', {groupId});
+  }
+
+  updateToken(newToken: string): void {
+    if((this.socket.auth as any).token !== newToken) {
+      (this.socket.auth as any).token = newToken;
+      this.socket.disconnect();
+      this.socket.connect();
+    }
   }
 
   /**

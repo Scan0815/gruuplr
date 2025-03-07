@@ -1,11 +1,11 @@
 import { Component, ComponentInterface, h, State } from '@stencil/core';
-import { request } from 'graphql-request';
 import { IonInputCustomEvent } from '@ionic/core';
 import { gql } from 'graphql-tag';
 import { Mutation } from '../../../generated/graphql';
 import { RouterNavigate } from '../../../utilities/RouterNavigate';
 import { AccountService } from '../../../services/account.service';
 import { CreateUserInput } from '@gruuplr/dtos';
+import { GraphQLService } from '../../../services/graphql/graphql.service';
 
 @Component({
   tag: 'page-login',
@@ -16,6 +16,8 @@ export class PageLogin implements ComponentInterface {
   @State() password: string = '';
   @State() errorMessage: string = '';
 
+  private graphQLService: GraphQLService = GraphQLService.getInstance();
+  private accountService: AccountService = AccountService.getInstance();
   async handleLogin(event: Event) {
     event.preventDefault();
 
@@ -29,6 +31,7 @@ export class PageLogin implements ComponentInterface {
         mutation Login($username: String!, $password: String!) {
             login(input: {username: $username, password: $password}) {
                 token
+                refreshToken
                 user {
                     id
                     username
@@ -40,7 +43,7 @@ export class PageLogin implements ComponentInterface {
     `;
 
     try {
-      const response = await request<Mutation, CreateUserInput>(
+      const response = await this.graphQLService.request<Mutation, CreateUserInput>(
         'http://localhost:3000/graphql',
         LOGIN_MUTATION,
         {
@@ -49,8 +52,8 @@ export class PageLogin implements ComponentInterface {
         }
       );
       console.log('Login successful:', response);
-      AccountService.getInstance().setToken(response.login.token);
-      AccountService.getInstance().setUser(response.login.user);
+      this.accountService.setTokens(response.login.token, response.login.refreshToken);
+      this.accountService.setUser(response.login.user);
       // Redirect to the chat page with the logged-in user's id
      await RouterNavigate('/chat');
     } catch (error) {

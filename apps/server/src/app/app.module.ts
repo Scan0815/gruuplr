@@ -9,6 +9,8 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
 import { join } from 'path';
 import { GroupModule } from './group/group.module';
+import { APP_FILTER } from '@nestjs/core';
+import { ExceptionFilter } from '../filters/GqlExceptionFilter';
 
 @Module({
   imports: [
@@ -27,6 +29,12 @@ import { GroupModule } from './group/group.module';
     UserModule,
     GroupModule,
     AuthModule
-  ]
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: ExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

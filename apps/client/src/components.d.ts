@@ -5,6 +5,8 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { GroupDto } from "./generated/graphql";
+export { GroupDto } from "./generated/graphql";
 export namespace Components {
     interface AppRoot {
     }
@@ -12,6 +14,8 @@ export namespace Components {
     }
     interface ChatView {
         "groupId": string;
+    }
+    interface GroupCreate {
     }
     interface GroupList {
     }
@@ -21,9 +25,10 @@ export namespace Components {
     }
     interface PageRegister {
     }
-    interface RxdbTest {
-        "userId": string;
-    }
+}
+export interface GroupCreateCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLGroupCreateElement;
 }
 declare global {
     interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {
@@ -43,6 +48,23 @@ declare global {
     var HTMLChatViewElement: {
         prototype: HTMLChatViewElement;
         new (): HTMLChatViewElement;
+    };
+    interface HTMLGroupCreateElementEventMap {
+        "groupCreated": GroupDto;
+    }
+    interface HTMLGroupCreateElement extends Components.GroupCreate, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLGroupCreateElementEventMap>(type: K, listener: (this: HTMLGroupCreateElement, ev: GroupCreateCustomEvent<HTMLGroupCreateElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLGroupCreateElementEventMap>(type: K, listener: (this: HTMLGroupCreateElement, ev: GroupCreateCustomEvent<HTMLGroupCreateElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLGroupCreateElement: {
+        prototype: HTMLGroupCreateElement;
+        new (): HTMLGroupCreateElement;
     };
     interface HTMLGroupListElement extends Components.GroupList, HTMLStencilElement {
     }
@@ -68,21 +90,15 @@ declare global {
         prototype: HTMLPageRegisterElement;
         new (): HTMLPageRegisterElement;
     };
-    interface HTMLRxdbTestElement extends Components.RxdbTest, HTMLStencilElement {
-    }
-    var HTMLRxdbTestElement: {
-        prototype: HTMLRxdbTestElement;
-        new (): HTMLRxdbTestElement;
-    };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
         "chat-default": HTMLChatDefaultElement;
         "chat-view": HTMLChatViewElement;
+        "group-create": HTMLGroupCreateElement;
         "group-list": HTMLGroupListElement;
         "page-chat": HTMLPageChatElement;
         "page-login": HTMLPageLoginElement;
         "page-register": HTMLPageRegisterElement;
-        "rxdb-test": HTMLRxdbTestElement;
     }
 }
 declare namespace LocalJSX {
@@ -93,6 +109,9 @@ declare namespace LocalJSX {
     interface ChatView {
         "groupId": string;
     }
+    interface GroupCreate {
+        "onGroupCreated"?: (event: GroupCreateCustomEvent<GroupDto>) => void;
+    }
     interface GroupList {
     }
     interface PageChat {
@@ -101,18 +120,15 @@ declare namespace LocalJSX {
     }
     interface PageRegister {
     }
-    interface RxdbTest {
-        "userId"?: string;
-    }
     interface IntrinsicElements {
         "app-root": AppRoot;
         "chat-default": ChatDefault;
         "chat-view": ChatView;
+        "group-create": GroupCreate;
         "group-list": GroupList;
         "page-chat": PageChat;
         "page-login": PageLogin;
         "page-register": PageRegister;
-        "rxdb-test": RxdbTest;
     }
 }
 export { LocalJSX as JSX };
@@ -122,11 +138,11 @@ declare module "@stencil/core" {
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
             "chat-default": LocalJSX.ChatDefault & JSXBase.HTMLAttributes<HTMLChatDefaultElement>;
             "chat-view": LocalJSX.ChatView & JSXBase.HTMLAttributes<HTMLChatViewElement>;
+            "group-create": LocalJSX.GroupCreate & JSXBase.HTMLAttributes<HTMLGroupCreateElement>;
             "group-list": LocalJSX.GroupList & JSXBase.HTMLAttributes<HTMLGroupListElement>;
             "page-chat": LocalJSX.PageChat & JSXBase.HTMLAttributes<HTMLPageChatElement>;
             "page-login": LocalJSX.PageLogin & JSXBase.HTMLAttributes<HTMLPageLoginElement>;
             "page-register": LocalJSX.PageRegister & JSXBase.HTMLAttributes<HTMLPageRegisterElement>;
-            "rxdb-test": LocalJSX.RxdbTest & JSXBase.HTMLAttributes<HTMLRxdbTestElement>;
         }
     }
 }

@@ -1,44 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateGroupInput, GroupDTO } from '@gruuplr/dtos';
-import { plainToInstance } from 'class-transformer';
+import { Model, Types } from 'mongoose';
+import { GroupDTO, CreateGroupInput } from '@gruuplr/dtos';
 import { Group } from '@gruuplr/schemas';
 
 @Injectable()
 export class GroupService {
-  constructor(
-    @InjectModel('Group') private groupModel: Model<Group>
-  ) {}
+  constructor(@InjectModel('Group') private groupModel: Model<Group>) {}
 
-  async createGroup(input: CreateGroupInput): Promise<GroupDTO> {
+  async createGroup(input: CreateGroupInput, userId: string): Promise<GroupDTO> {
+    // Create a new group document using input
     const createdGroup = new this.groupModel(input);
-    const savedGroup: Group = await createdGroup.save();
-    return plainToInstance(GroupDTO, savedGroup, {
-      excludeExtraneousValues: true,
-    });
+    // Add the creator as an admin member
+    createdGroup.members = [{ userId: new Types.ObjectId(userId), role: 'admin' }];
+    return await createdGroup.save();
+  }
+
+  async getGroupsForUser(userId: string): Promise<GroupDTO[]> {
+   return await this.groupModel.find({ 'members.userId': userId }).exec();
   }
 
   async getGroups(): Promise<GroupDTO[]> {
-    const groups = await this.groupModel.find().exec();
-    return groups.map((g) =>
-      plainToInstance(GroupDTO, g, { excludeExtraneousValues: true })
-    );
-  }
-
-  async joinGroup(groupId: string, userId: string): Promise<GroupDTO> {
-    const group = await this.groupModel.findById(groupId);
-    if (!group) {
-      throw new Error('Group not found');
-    }
-    // Ensure members array is defined
-    if (!group.members) {
-      group.members = [];
-    }
-    if (!group.members.includes(userId)) {
-      group.members.push(userId);
-      await group.save();
-    }
-    return plainToInstance(GroupDTO, group, { excludeExtraneousValues: true });
+    return await this.groupModel.find().exec();
   }
 }

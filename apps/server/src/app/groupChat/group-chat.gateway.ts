@@ -46,7 +46,6 @@ export class GroupChatGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { groupId: string }
   ) {
-    console.log(client, 'Join group', data.groupId);
     if (!data.groupId) {
       throw new WsGroupException('Group id not provided',"GROUP_ID_MISSING");
     }

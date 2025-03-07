@@ -1,21 +1,26 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UserDTO } from '@gruuplr/dtos';
+import { UserDto } from '../generated/graphql';
+import { UserService } from './users/user.service';
 
 export class AccountService {
   private static instance: AccountService;
   private tokenSubject: BehaviorSubject<string | null>;
-  private userSubject: BehaviorSubject<UserDTO | null>;
-  // Private constructor to enforce singleton usage.
+  private refreshTokenSubject: BehaviorSubject<string | null>;
+  private userSubject: BehaviorSubject<UserDto | null>;
+
   private constructor() {
+
+    const activeUser = await UserService.getInstance().getActiveUser();
+
+
     const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
     this.tokenSubject = new BehaviorSubject<string | null>(token);
-    this.userSubject = new BehaviorSubject<UserDTO | null>(null);
+    this.refreshTokenSubject = new BehaviorSubject<string | null>(refreshToken);
+    this.userSubject = new BehaviorSubject<UserDto | null>(null);
   }
 
-  /**
-   * Returns the singleton instance of AccountService.
-   */
   public static getInstance(): AccountService {
     if (!AccountService.instance) {
       AccountService.instance = new AccountService();
@@ -23,50 +28,42 @@ export class AccountService {
     return AccountService.instance;
   }
 
-  /**
-   * Saves the token and updates the observable state.
-   * @param token - The authentication token to save.
-   */
-  public setToken(token: string): void {
-    localStorage.setItem('token', token);
-    this.tokenSubject.next(token);
-  }
-
-  public setUser(user: any): void {
+  public setUser(user: UserDto): void {
     localStorage.setItem('user', JSON.stringify(user));
     this.userSubject.next(user);
   }
 
-  public getUser(): UserDTO|null {
-    return JSON.parse(localStorage.getItem('user') as string) as UserDTO;
+  public getUser(): UserDto|null {
+    return JSON.parse(localStorage.getItem('user') as string) as UserDto;
   }
 
-  /**
-   * Retrieves the current token.
-   * @returns The stored token or null if not set.
-   */
+  public setTokens(token: string, refreshToken: string): void {
+    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('token', token);
+    this.tokenSubject.next(token);
+    this.refreshTokenSubject.next(refreshToken);
+  }
+
+  public updateTokens(token: string, refreshToken: string): void {
+    this.setTokens(token, refreshToken);
+  }
+
+  public clearTokens(): void {
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('token');
+    this.tokenSubject.next(null);
+    this.refreshTokenSubject.next(null);
+  }
+
   public getToken(): string | null {
     return this.tokenSubject.value;
   }
 
-  /**
-   * Clears the token and updates the observable state.
-   */
-  public clearToken(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.tokenSubject.next(null);
-    this.userSubject.next(null);
+  public getRefreshToken(): string | null {
+    return this.refreshTokenSubject.value;
   }
 
-  /**
-   * An observable that emits true if a token is present (i.e. the user is logged in),
-   * and false otherwise.
-   * @returns Observable<boolean> reflecting the login state.
-   */
   public isLoggedIn$(): Observable<boolean> {
-    return this.tokenSubject.asObservable().pipe(
-      map(token => token !== null && token !== '')
-    );
+    return this.tokenSubject.asObservable().pipe(map(token => !!token));
   }
 }

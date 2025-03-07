@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { UserDTO } from '@gruuplr/dtos';
+import { TokenDTO } from '@gruuplr/dtos';
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy, 'jwt') { // ✅ Definiere die Strategie explizit als "jwt"
   constructor(configService: ConfigService) {
@@ -14,7 +14,11 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'jwt') { // ✅ Def
     super(jwt);
   }
 
-  async validate(payload: UserDTO) {
+  async validate(payload: TokenDTO) {
+    console.log('payload', payload);
+    if (payload.tokenType !== 'access') {
+      throw new UnauthorizedException('Invalid token type');
+    }
     return payload; // ✅ Rückgabe der User-Daten für den Guard
   }
 }

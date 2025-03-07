@@ -1,5 +1,4 @@
 import { Component, h, Prop, State, Watch } from '@stencil/core';
-import { RxDBService } from '../../../services/rxdb.service';
 import { ChatSocketService } from '../../../services/chat-socket.service';
 import { AccountService } from '../../../services/account.service';
 
@@ -13,11 +12,10 @@ export class ChatView {
   @State() newMessage: string = '';
 
   private socketService: ChatSocketService = ChatSocketService.getInstance(AccountService.getInstance().getToken() as string);
-
-  private rxdbService: RxDBService = new RxDBService();
+  //private rxdbService: RxDBService = new RxDBService();
 
   async componentDidLoad() {
-    await this.rxdbService.initialize();
+    //await this.rxdbService.initialize();
     if (this.groupId) {
       await this.loadMessages();
     }
@@ -32,8 +30,8 @@ export class ChatView {
 
   async loadMessages() {
     if (this.groupId) {
-      this.messages = await this.rxdbService.getMessages(this.groupId);
-      this.messages = this.messages.sort((a, b) => a.updatedAt - b.updatedAt);
+      //this.messages = await this.rxdbService.getMessages(this.groupId);
+      //this.messages = this.messages.sort((a, b) => a.updatedAt - b.updatedAt);
     }
   }
 
@@ -41,7 +39,7 @@ export class ChatView {
     event.preventDefault();
     if (!this.newMessage || !this.groupId) return;
     const userId = AccountService.getInstance().getUser()?.id || '1';
-    await this.rxdbService.addMessage(this.newMessage, userId, this.groupId);
+    //await this.rxdbService.addMessage(this.newMessage, userId, this.groupId);
     this.socketService.sendMessage({
       groupId:this.groupId,
       userId:userId,

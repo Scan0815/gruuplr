@@ -1,36 +1,36 @@
 import { newSpecPage } from '@stencil/core/testing';
-import { RxdbTest } from './rxdb-test';
+import { GroupCreate } from './group-create';
 
-describe('rxdb-test', () => {
+describe('group-create', () => {
   it('renders', async () => {
     const { root } = await newSpecPage({
-      components: [RxdbTest],
-      html: '<rxdb-test></rxdb-test>',
+      components: [GroupCreate],
+      html: '<group-create></group-create>',
     });
     expect(root).toEqualHtml(`
-      <rxdb-test>
+      <group-create>
         <mock:shadow-root>
           <div>
             Hello, World! I'm
           </div>
         </mock:shadow-root>
-      </rxdb-test>
+      </group-create>
     `);
   });
 
   it('renders with values', async () => {
     const { root } = await newSpecPage({
-      components: [RxdbTest],
-      html: `<rxdb-test first="Stencil" last="'Don't call me a framework' JS"></rxdb-test>`,
+      components: [GroupCreate],
+      html: `<group-create first="Stencil" last="'Don't call me a framework' JS"></group-create>`,
     });
     expect(root).toEqualHtml(`
-      <rxdb-test first="Stencil" last="'Don't call me a framework' JS">
+      <group-create first="Stencil" last="'Don't call me a framework' JS">
         <mock:shadow-root>
           <div>
             Hello, World! I'm Stencil 'Don't call me a framework' JS
           </div>
         </mock:shadow-root>
-      </rxdb-test>
+      </group-create>
     `);
   });
 });

@@ -1,7 +1,7 @@
 import { Component, ComponentInterface, h, State } from '@stencil/core';
 import { ChatSocketService } from '../../../services/chat-socket.service';
 import { AccountService } from '../../../services/account.service';
-import { RouterNavigate } from '../../../utilities/RouterNavigate';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   tag: 'page-chat',
@@ -10,11 +10,10 @@ import { RouterNavigate } from '../../../utilities/RouterNavigate';
 export class PageChat implements ComponentInterface {
   @State() messages: any[] = [];
   private accountService: AccountService = AccountService.getInstance();
+  //private authService:AuthService = AuthService.getInstance();
   private chatSocketService: ChatSocketService|null = null;
-
   async componentWillLoad() {
     this.chatSocketService = ChatSocketService.getInstance(this.accountService.getToken() as string);
-    const groupIds = ['random', 'general', 'support'];
     // Listen for incoming messages from all joined groups
     this.chatSocketService.onMessage((message) => {
       this.messages = [...this.messages, message];
@@ -22,23 +21,27 @@ export class PageChat implements ComponentInterface {
     });
 
 
-    this.accountService.isLoggedIn$().subscribe((isLoggedIn) => {
+    this.accountService.isLoggedIn$().subscribe(async (isLoggedIn) => {
+
+      console.log('PageChat isLoggedIn:', isLoggedIn);
+
       if (isLoggedIn) {
-        this.chatSocketService = ChatSocketService.getInstance(this.accountService.getToken() as string);
-        this.chatSocketService.joinGroups(groupIds);
+        //const groups = await GroupService.getInstance().getMyGroups();
+        //const groupIds = groups.map((group) => group.id);
+        //this.chatSocketService?.joinGroups(groupIds);
       }else{
         this.chatSocketService?.disconnect();
       }
     });
 
-
     this.chatSocketService.onErrorMessage(async (message) => {
-      console.error('Error:', message);
+      console.error('Socket error:', message);
       switch (message.code) {
         case 'TOKEN_INVALID':
-          console.error('Token invalid');
-          this.accountService?.clearToken();
-          await RouterNavigate('/login','back');
+          await AuthService.getInstance().refreshAccessToken();
+          break;
+        default:
+          // Handle other error codes if needed.
           break;
       }
     });
