@@ -4,6 +4,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Expose, Transform } from 'class-transformer';
 import { User } from './user.schema';
 import { Group } from './group.schema';
+import { GroupKey } from './group-key.schema';
 
 
 @Schema({ timestamps: true }) // ✅ Mongoose-Schema
@@ -28,10 +29,14 @@ export class Message extends Document {
   @Prop({ required: true, type: Buffer }) // Speichert verschlüsselte Nachricht als Binärdaten
   @Field()
   @Expose()
-  @Transform(({ value }) => (value instanceof Buffer ? value.toString('base64') : value))
   encryptedMessage!: string; // Exposed as a Base64 string
 
-  @Prop({ type: Types.ObjectId, ref: 'groupkeys', required: true })
+  @Prop({ required: true, type: Buffer }) // Speichert verschlüsselte Nachricht als Binärdaten
+  @Field()
+  @Expose()
+  iv!: string; // Exposed as a Base64 string
+
+  @Prop({ type: Types.ObjectId, ref: GroupKey.name, required: true })
   @Field(() => ID)
   @Expose()
   keyId!: Types.ObjectId;

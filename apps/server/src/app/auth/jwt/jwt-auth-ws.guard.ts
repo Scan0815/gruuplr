@@ -12,15 +12,25 @@ export class JwtAuthWsGuard implements CanActivate {
     // ✅ 1. Token aus dem Handshake-Query oder den Headers holen
     const token = client.handshake.auth.token as string; // Falls Token in der URL übergeben wurde
     if (!token) {
-      throw new WsTokenException('Custom forbidden: Missing authentication token',"TOKEN_MISSING");
+      throw new WsTokenException('Custom forbidden: Missing authentication token', "TOKEN_MISSING");
     }
 
     try {
-      // ✅ 2. Token verifizieren
-      client.data.user = this.jwtService.verify(token);
+      const decoded = this.jwtService.verify(token);
+      if (decoded.tokenType !== 'access') {
+        throw new WsTokenException('Invalid token type', "TOKEN_INVALID");
+      }
+      
+      // Write the decoded token data to client.data.user
+      client.data.user = {
+        id: decoded.id,
+        role: decoded.role,
+        username: decoded.username
+      };
+      
       return true;
     } catch (error) {
-      throw new WsTokenException('Custom forbidden: Missing authentication token',"TOKEN_INVALID");
+      throw new WsTokenException('Custom forbidden: Invalid authentication token', "TOKEN_INVALID");
     }
   }
 }

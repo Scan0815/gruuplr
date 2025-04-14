@@ -1,41 +1,74 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { CurrentUser } from './current-user.decorator';
-import { AuthResponseDTO, CreateUserInput, UserDTO } from '@gruuplr/dtos';
+import { AuthResponseDTO, CreateUserInput, LoginUserInput, UserDTO } from '@gruuplr/dtos';
 import { JwtService } from '@nestjs/jwt';
 
 @Resolver(() => UserDTO)
 export class UserResolver {
-  constructor(private readonly userService: UserService,private readonly jwtService: JwtService) {}
-
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService
+  ) {}
 
   // ✅ Benutzer registrieren (Mutation)
   @Mutation(() => AuthResponseDTO)
   async register(
-    @Args('input') input: CreateUserInput,
+    @Args('input') input: CreateUserInput
   ): Promise<AuthResponseDTO> {
-    const user =  await this.userService.createUser(input);
-    this.userService.signUser({...user})
-    const accessToken = this.jwtService.sign({ id: user.id, tokenType: 'access' }, { expiresIn: '1m' });
-    const refreshToken = this.jwtService.sign({ id: user.id, tokenType: 'refresh' }, { expiresIn: '7d',secret:process.env.JWT_REFRESH_SECRET});
+    const user = await this.userService.createUser(input);
+    this.userService.signUser({ ...user });
+    const accessToken = this.jwtService.sign(
+      {
+        id: user.id,
+        role: user.role,
+        username: user.username,
+        tokenType: 'access',
+      },
+      { expiresIn: '1m' }
+    );
+    const refreshToken = this.jwtService.sign(
+      { id: user.id, tokenType: 'refresh' },
+      {
+        expiresIn: '7d',
+        secret: process.env.JWT_REFRESH_SECRET,
+      }
+    );
     return { token: accessToken, refreshToken, user };
   }
 
   // ✅ Login (Mutation) -> Gibt JWT zurück
   @Mutation(() => AuthResponseDTO)
-  async login(
-    @Args('input') input: CreateUserInput,
-  ): Promise<AuthResponseDTO> {
-    const token = await this.userService.validateUser(input.username,input.password) as string;
+  async login(@Args('input') input: LoginUserInput): Promise<AuthResponseDTO> {
+    const token = (await this.userService.validateUser(
+      input.eMail,
+      input.password
+    )) as string;
     if (!token) {
       throw new Error('Invalid credentials');
     }
-    const user = await this.userService.getUserByUsername(input.username) as UserDTO;
+    const user = (await this.userService.getUserByEMail(
+      input.eMail
+    )) as UserDTO;
 
-    const accessToken = this.jwtService.sign({ id: user.id, tokenType: 'access' }, { expiresIn: '1m' });
-    const refreshToken = this.jwtService.sign({ id: user.id, tokenType: 'refresh' }, { expiresIn: '7d',secret:process.env.JWT_REFRESH_SECRET});
+    const accessToken = this.jwtService.sign(
+      {
+        id: user.id,
+        role: user.role,
+        username: user.username,
+        tokenType: 'access',
+      },
+      { expiresIn: '1m' }
+    );
+    const refreshToken = this.jwtService.sign(
+      { id: user.id, tokenType: 'refresh' },
+      {
+        expiresIn: '7d',
+        secret: process.env.JWT_REFRESH_SECRET,
+      }
+    );
 
     return { token: accessToken, refreshToken, user };
   }
@@ -55,5 +88,4 @@ export class UserResolver {
     console.log('me', user);
     return user;
   }
-
 }

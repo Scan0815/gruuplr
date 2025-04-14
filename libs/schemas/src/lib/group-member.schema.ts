@@ -1,22 +1,48 @@
 // File: libs/schemas/src/lib/group-member.schema.ts
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types, Schema as MongooseSchema } from 'mongoose';
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Document, Types } from 'mongoose';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Expose, Transform } from 'class-transformer';
+import { User } from './user.schema';
+import { Group } from './group.schema';
 
-@Schema({ _id: false }) // No separate _id for subdocument
+@Schema({ timestamps: true })
 @ObjectType()
-export class GroupMember {
+export class GroupMember extends Document {
+  @Field(() => ID)
+  @Expose()
+  @Transform(({ obj }) => obj._id?.toString() ?? obj.id?.toString())
+  override id!: string;
+
+  @Prop({ type: Types.ObjectId, ref: User.name, required: true })
   @Field(() => ID)
   @Expose()
   @Transform(({ value }) => value?.toString())
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   userId!: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: Group.name, required: true })
+  @Field(() => ID)
+  @Expose()
+  @Transform(({ value }) => value?.toString())
+  groupId!: Types.ObjectId;
+
+  @Prop({ required: true, default: 'member' })
+  @Field()
+  @Expose()
+  role!: 'admin' | 'member';
+
+  @Prop({ required: true, default: true })
+  @Field()
+  @Expose()
+  isActive!: boolean;
 
   @Field()
   @Expose()
-  @Prop({ default: 'member' }) // Default role is "member"
-  role!: string;
+  createdAt!: Date;
+
+  @Field()
+  @Expose()
+  updatedAt!: Date;
 }
 
 export const GroupMemberSchema = SchemaFactory.createForClass(GroupMember);

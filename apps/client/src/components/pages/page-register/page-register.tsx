@@ -1,11 +1,10 @@
 import { Component, ComponentInterface, h, State } from '@stencil/core';
 import { IonInputCustomEvent } from '@ionic/core';
-import { gql } from 'graphql-tag';
-import { Mutation } from '../../../generated/graphql';
 import { RouterNavigate } from '../../../utilities/RouterNavigate';
-import { AccountService } from '../../../services/account.service';
-import { CreateUserInput } from '@gruuplr/dtos';
-import { GraphQLService } from '../../../services/graphql/graphql.service';
+import { AccountGraphQL } from '../../../features/account/account.graphql';
+import { UserService } from '../../../features/users/user.service';
+import { AccountService } from '../../../features/account/account.service';
+import { User } from '../../../features/users/user.model';
 
 @Component({
   tag: 'page-register',
@@ -14,14 +13,15 @@ import { GraphQLService } from '../../../services/graphql/graphql.service';
 export class PageRegister implements ComponentInterface {
   @State() username: string = '';
   @State() password: string = '';
+  @State() eMail: string = '';
   @State() confirmPassword: string = '';
   @State() errorMessage: string = '';
   @State() passwordStrength: number = 0; // 0 - 1 (für Fortschrittsbalken)
   @State() passwordColor: string = 'danger'; // Farbe für `ion-progress-bar`
   @State() isFormValid: boolean = false;
 
-  private graphQLService: GraphQLService = GraphQLService.getInstance();
-  private accountService: AccountService = AccountService.getInstance();
+  private userService = new UserService();
+  private accountService = AccountService.getInstance();
 
   /**
    * Überprüft, wie sicher das Passwort ist (0-100%)
@@ -59,32 +59,24 @@ export class PageRegister implements ComponentInterface {
 
     if (!this.isFormValid) return;
 
-    const REGISTER_MUTATION = gql`
-      mutation Register($username: String!, $password: String!) {
-        register(input: { username: $username, password: $password }) {
-          token
-          refreshToken
-          user {
-            id
-            username
-            role
-            createdAt
-          }
-        }
-      }
-    `;
-
     try {
-      const response = await this.graphQLService.request<
-        Mutation,
-        CreateUserInput
-      >('http://localhost:3000/graphql', REGISTER_MUTATION, {
-        username: this.username,
-        password: this.password,
-      });
-      console.log(response);
-      this.accountService.setTokens(response.register.token, response.register.refreshToken);
-      this.accountService.setUser(response.register.user);
+      const result = await AccountGraphQL.register(
+        this.username,
+        this.eMail,
+        this.password
+      );
+
+      const localUser:User = Object.assign({
+        accessToken: result.token,
+        refreshToken: result.refreshToken,
+        name: result.user.username,
+        active: 1,
+      },result.user)
+
+      console.log(localUser);
+
+      await this.userService.createOrUpdateUser(localUser);
+      this.accountService.switchAccount(localUser);
       await RouterNavigate('/chat');
     } catch (error) {
       this.errorMessage = 'Registrierung fehlgeschlagen!';
@@ -106,6 +98,16 @@ export class PageRegister implements ComponentInterface {
           </ion-card-header>
           <ion-card-content>
             <form onSubmit={(event) => this.handleRegister(event)}>
+              <ion-item>
+                <ion-input
+                  placeholder="E-Mail"
+                  value={this.eMail}
+                  onIonInput={(e: IonInputCustomEvent<string>) => {
+                    this.eMail = e.target.value as string;
+                    this.validateForm();
+                  }}
+                />
+              </ion-item>
               <ion-item>
                 <ion-input
                   placeholder="Benutzername"

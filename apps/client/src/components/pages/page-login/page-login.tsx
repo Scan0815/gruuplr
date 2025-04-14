@@ -1,11 +1,10 @@
 import { Component, ComponentInterface, h, State } from '@stencil/core';
 import { IonInputCustomEvent } from '@ionic/core';
-import { gql } from 'graphql-tag';
-import { Mutation } from '../../../generated/graphql';
 import { RouterNavigate } from '../../../utilities/RouterNavigate';
-import { AccountService } from '../../../services/account.service';
-import { CreateUserInput } from '@gruuplr/dtos';
-import { GraphQLService } from '../../../services/graphql/graphql.service';
+import { AccountService } from '../../../features/account/account.service';
+import { UserService } from '../../../features/users/user.service';
+import { AccountGraphQL } from '../../../features/account/account.graphql';
+import { User } from '../../../features/users/user.model';
 
 @Component({
   tag: 'page-login',
@@ -14,48 +13,36 @@ import { GraphQLService } from '../../../services/graphql/graphql.service';
 export class PageLogin implements ComponentInterface {
   @State() username: string = '';
   @State() password: string = '';
+  @State() eMail: string = '';
   @State() errorMessage: string = '';
 
-  private graphQLService: GraphQLService = GraphQLService.getInstance();
+  private userService = new UserService();
   private accountService: AccountService = AccountService.getInstance();
+
   async handleLogin(event: Event) {
     event.preventDefault();
 
     // Simple validation: both fields must be filled
-    if (!this.username || !this.password) {
+    if (!this.eMail || !this.password) {
       this.errorMessage = 'Please fill in both fields.';
       return;
     }
-
-    const LOGIN_MUTATION = gql`
-        mutation Login($username: String!, $password: String!) {
-            login(input: {username: $username, password: $password}) {
-                token
-                refreshToken
-                user {
-                    id
-                    username
-                    role
-                    createdAt
-                }
-            }
-        }
-    `;
-
     try {
-      const response = await this.graphQLService.request<Mutation, CreateUserInput>(
-        'http://localhost:3000/graphql',
-        LOGIN_MUTATION,
-        {
-          username: this.username,
-          password: this.password,
-        }
-      );
-      console.log('Login successful:', response);
-      this.accountService.setTokens(response.login.token, response.login.refreshToken);
-      this.accountService.setUser(response.login.user);
+      const result = await AccountGraphQL.login(this.eMail, this.password);
+
+      const localUser:User = Object.assign({
+        accessToken: result.token,
+        refreshToken: result.refreshToken,
+        name: result.user.username,
+        active: 1,
+      },result.user)
+
+      console.log(localUser);
+
+      await this.userService.createOrUpdateUser(localUser);
+      this.accountService.switchAccount(localUser);
       // Redirect to the chat page with the logged-in user's id
-     await RouterNavigate('/chat');
+      await RouterNavigate('/chat');
     } catch (error) {
       this.errorMessage = 'Login failed!';
       console.error(error);
@@ -78,10 +65,10 @@ export class PageLogin implements ComponentInterface {
             <form onSubmit={(event) => this.handleLogin(event)}>
               <ion-item>
                 <ion-input
-                  placeholder="Username"
-                  value={this.username}
+                  placeholder="eMail"
+                  value={this.eMail}
                   onIonInput={(e: IonInputCustomEvent<string>) => {
-                    this.username = e.target.value as string;
+                    this.eMail = e.target.value as string;
                     // Clear error message on input change
                     this.errorMessage = '';
                   }}
@@ -110,7 +97,7 @@ export class PageLogin implements ComponentInterface {
             </form>
           </ion-card-content>
         </ion-card>
-      </ion-content>
+      </ion-content>,
     ];
   }
 }

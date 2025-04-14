@@ -5,8 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { GroupDto } from "./generated/graphql";
-export { GroupDto } from "./generated/graphql";
+import { Group } from "./features/groups/group.model";
+import { User } from "./features/users/user.model";
+export { Group } from "./features/groups/group.model";
+export { User } from "./features/users/user.model";
 export namespace Components {
     interface AppRoot {
     }
@@ -17,6 +19,9 @@ export namespace Components {
     }
     interface GroupCreate {
     }
+    interface GroupInvite {
+        "groupId": string;
+    }
     interface GroupList {
     }
     interface PageChat {
@@ -25,10 +30,16 @@ export namespace Components {
     }
     interface PageRegister {
     }
+    interface UserLocalList {
+    }
 }
 export interface GroupCreateCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLGroupCreateElement;
+}
+export interface UserLocalListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLUserLocalListElement;
 }
 declare global {
     interface HTMLAppRootElement extends Components.AppRoot, HTMLStencilElement {
@@ -50,7 +61,7 @@ declare global {
         new (): HTMLChatViewElement;
     };
     interface HTMLGroupCreateElementEventMap {
-        "groupCreated": GroupDto;
+        "groupCreated": Group;
     }
     interface HTMLGroupCreateElement extends Components.GroupCreate, HTMLStencilElement {
         addEventListener<K extends keyof HTMLGroupCreateElementEventMap>(type: K, listener: (this: HTMLGroupCreateElement, ev: GroupCreateCustomEvent<HTMLGroupCreateElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -65,6 +76,12 @@ declare global {
     var HTMLGroupCreateElement: {
         prototype: HTMLGroupCreateElement;
         new (): HTMLGroupCreateElement;
+    };
+    interface HTMLGroupInviteElement extends Components.GroupInvite, HTMLStencilElement {
+    }
+    var HTMLGroupInviteElement: {
+        prototype: HTMLGroupInviteElement;
+        new (): HTMLGroupInviteElement;
     };
     interface HTMLGroupListElement extends Components.GroupList, HTMLStencilElement {
     }
@@ -90,15 +107,35 @@ declare global {
         prototype: HTMLPageRegisterElement;
         new (): HTMLPageRegisterElement;
     };
+    interface HTMLUserLocalListElementEventMap {
+        "userSwitched": User;
+        "loggedOut": boolean;
+    }
+    interface HTMLUserLocalListElement extends Components.UserLocalList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLUserLocalListElementEventMap>(type: K, listener: (this: HTMLUserLocalListElement, ev: UserLocalListCustomEvent<HTMLUserLocalListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLUserLocalListElementEventMap>(type: K, listener: (this: HTMLUserLocalListElement, ev: UserLocalListCustomEvent<HTMLUserLocalListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLUserLocalListElement: {
+        prototype: HTMLUserLocalListElement;
+        new (): HTMLUserLocalListElement;
+    };
     interface HTMLElementTagNameMap {
         "app-root": HTMLAppRootElement;
         "chat-default": HTMLChatDefaultElement;
         "chat-view": HTMLChatViewElement;
         "group-create": HTMLGroupCreateElement;
+        "group-invite": HTMLGroupInviteElement;
         "group-list": HTMLGroupListElement;
         "page-chat": HTMLPageChatElement;
         "page-login": HTMLPageLoginElement;
         "page-register": HTMLPageRegisterElement;
+        "user-local-list": HTMLUserLocalListElement;
     }
 }
 declare namespace LocalJSX {
@@ -110,7 +147,10 @@ declare namespace LocalJSX {
         "groupId": string;
     }
     interface GroupCreate {
-        "onGroupCreated"?: (event: GroupCreateCustomEvent<GroupDto>) => void;
+        "onGroupCreated"?: (event: GroupCreateCustomEvent<Group>) => void;
+    }
+    interface GroupInvite {
+        "groupId": string;
     }
     interface GroupList {
     }
@@ -120,15 +160,21 @@ declare namespace LocalJSX {
     }
     interface PageRegister {
     }
+    interface UserLocalList {
+        "onLoggedOut"?: (event: UserLocalListCustomEvent<boolean>) => void;
+        "onUserSwitched"?: (event: UserLocalListCustomEvent<User>) => void;
+    }
     interface IntrinsicElements {
         "app-root": AppRoot;
         "chat-default": ChatDefault;
         "chat-view": ChatView;
         "group-create": GroupCreate;
+        "group-invite": GroupInvite;
         "group-list": GroupList;
         "page-chat": PageChat;
         "page-login": PageLogin;
         "page-register": PageRegister;
+        "user-local-list": UserLocalList;
     }
 }
 export { LocalJSX as JSX };
@@ -139,10 +185,12 @@ declare module "@stencil/core" {
             "chat-default": LocalJSX.ChatDefault & JSXBase.HTMLAttributes<HTMLChatDefaultElement>;
             "chat-view": LocalJSX.ChatView & JSXBase.HTMLAttributes<HTMLChatViewElement>;
             "group-create": LocalJSX.GroupCreate & JSXBase.HTMLAttributes<HTMLGroupCreateElement>;
+            "group-invite": LocalJSX.GroupInvite & JSXBase.HTMLAttributes<HTMLGroupInviteElement>;
             "group-list": LocalJSX.GroupList & JSXBase.HTMLAttributes<HTMLGroupListElement>;
             "page-chat": LocalJSX.PageChat & JSXBase.HTMLAttributes<HTMLPageChatElement>;
             "page-login": LocalJSX.PageLogin & JSXBase.HTMLAttributes<HTMLPageLoginElement>;
             "page-register": LocalJSX.PageRegister & JSXBase.HTMLAttributes<HTMLPageRegisterElement>;
+            "user-local-list": LocalJSX.UserLocalList & JSXBase.HTMLAttributes<HTMLUserLocalListElement>;
         }
     }
 }

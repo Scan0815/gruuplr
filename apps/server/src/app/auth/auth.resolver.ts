@@ -21,9 +21,13 @@ export class AuthResolver {
       const payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET,
       });
+      const user = await this.userService.getUserById(payload.id);
       // Generate new tokens
       const newAccessToken = this.jwtService.sign(
-        { id: payload.id, tokenType: 'access' },
+        { id: user.id,
+          role: user.role,
+          username: user.username,
+          tokenType: 'access' },
         { expiresIn: '1m' }
       );
       const newRefreshToken = this.jwtService.sign(
@@ -33,7 +37,7 @@ export class AuthResolver {
           secret: process.env.JWT_REFRESH_SECRET,
         }
       );
-      const user = await this.userService.getUserById(payload.id);
+
       return { token: newAccessToken, refreshToken: newRefreshToken, user };
     } catch (error) {
       throw new BadRequestException('Refresh token is invalid or expired');

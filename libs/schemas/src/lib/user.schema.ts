@@ -15,9 +15,14 @@ export class User extends Document {
   override id!: string;
 
   @Field()
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   @Expose()
   username!: string;
+
+  @Field()
+  @Prop({ required: true, unique: true })
+  @Expose()
+  eMail!: string;
 
   @Prop({ required: true })
   @Expose()

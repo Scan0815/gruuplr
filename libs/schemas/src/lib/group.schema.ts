@@ -3,7 +3,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Expose, Transform } from 'class-transformer';
-import { GroupMember, GroupMemberSchema } from './group-member.schema';
 
 @Schema({ timestamps: true })
 @ObjectType()
@@ -13,7 +12,7 @@ export class Group extends Document {
   @Transform(({ obj }) => obj._id?.toString() ?? obj.id?.toString())
   override id!: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   @Expose()
   @Field()
   name!: string;
@@ -23,12 +22,6 @@ export class Group extends Document {
   @Field({ nullable: true })
   description?: string;
 
-  // Members stored as an array of GroupMember subdocuments.
-  @Prop({ type: [GroupMemberSchema], default: [] })
-  @Expose()
-  @Field(() => [GroupMember], { nullable: true })
-  members!: GroupMember[];
-
   @Field()
   @Expose()
   createdAt!: Date;
@@ -37,5 +30,6 @@ export class Group extends Document {
   @Expose()
   updatedAt!: Date;
 }
+
 
 export const GroupSchema = SchemaFactory.createForClass(Group);

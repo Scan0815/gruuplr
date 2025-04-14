@@ -10,7 +10,8 @@
     "tsBuildInfoFile": "out-tsc/server/tsconfig.app.tsbuildinfo",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "target": "es2017",
+    "strictPropertyInitialization": false
   },
   "exclude": [
     "jest.config.ts",

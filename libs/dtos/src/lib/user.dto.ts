@@ -8,9 +8,19 @@ export class UserDTO extends OmitType(User, ['_id'] as const) {
 }
 
 @InputType()
-export class CreateUserInput extends PickType(UserDTO, ['username', 'password'] as const) {
+export class CreateUserInput extends PickType(UserDTO, ['username', 'password','eMail'] as const) {
   @Field()
   override username!: string;
+  @Field()
+  override eMail!: string;
+  @Field()
+  override password!: string;
+}
+
+@InputType()
+export class LoginUserInput extends PickType(UserDTO, ['password','eMail'] as const) {
+  @Field()
+  override eMail!: string;
   @Field()
   override password!: string;
 }

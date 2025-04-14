@@ -18,9 +18,9 @@ export class UserService {
   async createUser(input:CreateUserInput): Promise<UserDTO> {
     console.log('input', input);
 
-    const existingUser = await this.userModel.findOne({ username: input.username }).exec();
+    const existingUser = await this.userModel.findOne({ eMail: input.eMail }).exec();
     if (existingUser) {
-      throw new BadRequestException('Username already exists');
+      throw new BadRequestException('eMail already exists');
     }
     const newUser = new this.userModel(input);
     const savedUser = await newUser.save();
@@ -35,13 +35,13 @@ export class UserService {
   }
 
   // ✅ Benutzer abrufen anhand des Usernames (für Login)
-  async getUserByUsername(username: string): Promise<User | null> {
-    return await this.userModel.findOne({ username }).exec();
+  async getUserByEMail(eMail: string): Promise<User | null> {
+    return await this.userModel.findOne({ eMail }).exec();
   }
 
   // ✅ Passwort validieren & JWT ausstellen
-  async validateUser(username: string, password: string): Promise<string | null> {
-    const user = await this.getUserByUsername(username);
+  async validateUser(eMail: string, password: string): Promise<string | null> {
+    const user = await this.getUserByEMail(eMail);
     if (!user) return null;
     const userToUse = plainToInstance(UserDTO, user, { excludeExtraneousValues: true })
     const isMatch = await verifyPassword(password, user.password);

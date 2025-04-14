@@ -1,7 +1,6 @@
 import { Component, ComponentInterface, h, State } from '@stencil/core';
-import { ChatSocketService } from '../../../services/chat-socket.service';
-import { AccountService } from '../../../services/account.service';
-import { AuthService } from '../../../services/auth.service';
+import { AccountService } from '../../../features/account/account.service';
+import { ReplicationModule } from '../../../features/replication/replication.module';
 
 @Component({
   tag: 'page-chat',
@@ -11,41 +10,25 @@ export class PageChat implements ComponentInterface {
   @State() messages: any[] = [];
   private accountService: AccountService = AccountService.getInstance();
   //private authService:AuthService = AuthService.getInstance();
-  private chatSocketService: ChatSocketService|null = null;
+  private replicationSocketService = ReplicationModule.getInstance().getReplicationSocketService();
   async componentWillLoad() {
-    this.chatSocketService = ChatSocketService.getInstance(this.accountService.getToken() as string);
-    // Listen for incoming messages from all joined groups
-    this.chatSocketService.onMessage((message) => {
-      this.messages = [...this.messages, message];
-      console.log('New message:', message);
-    });
-
-
-    this.accountService.isLoggedIn$().subscribe(async (isLoggedIn) => {
-
+    this.accountService.isLoggedIn().subscribe(async (isLoggedIn) => {
       console.log('PageChat isLoggedIn:', isLoggedIn);
-
-      if (isLoggedIn) {
-        //const groups = await GroupService.getInstance().getMyGroups();
-        //const groupIds = groups.map((group) => group.id);
-        //this.chatSocketService?.joinGroups(groupIds);
-      }else{
-        this.chatSocketService?.disconnect();
+      if(isLoggedIn){
+        try{
+          const lastReplicationRequest = localStorage.getItem('lastReplicationRequest');
+          const lastReplicationRequestTimestamp = lastReplicationRequest ? parseInt(lastReplicationRequest) : 0;
+          this.replicationSocketService?.updateAuthToken(this.accountService.getToken() as string);
+          const records = await this.replicationSocketService.requestReplicationSince(lastReplicationRequestTimestamp);
+          if(records){
+            await this.replicationSocketService.handleBulkReplication(records);
+          }
+          localStorage.setItem('lastReplicationRequest', Date.now().toString());
+        }catch(error){
+          console.error('Failed to request replication data:', error);
+        }
       }
     });
-
-    this.chatSocketService.onErrorMessage(async (message) => {
-      console.error('Socket error:', message);
-      switch (message.code) {
-        case 'TOKEN_INVALID':
-          await AuthService.getInstance().refreshAccessToken();
-          break;
-        default:
-          // Handle other error codes if needed.
-          break;
-      }
-    });
-
   }
 
   render() {

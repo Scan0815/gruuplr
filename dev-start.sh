@@ -13,8 +13,8 @@ else
   echo "No processes were found using port $FRONTEND_PORT,$BACKEND_PORT or failed to kill them."
 fi
 # Run the nx command
-nx run-many --target=build --projects=schemas,dtos,utilities
-nx run-many --target=serve --all --maxParallel=100
+npx nx run-many --target=build --projects=schemas,dtos,utilities
+npx nx run-many --target=serve --all --maxParallel=100
 
 # Check if the nx command was successful
 if [ $? -eq 0 ]; then
