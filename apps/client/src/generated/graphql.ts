@@ -62,14 +62,21 @@ export type LoginUserInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createGroup: GroupDto;
+  deleteGroup: Scalars['Boolean']['output'];
   login: AuthResponseDto;
   refreshToken: AuthResponseDto;
   register: AuthResponseDto;
+  updateGroup: GroupDto;
 };
 
 
 export type MutationCreateGroupArgs = {
   input: CreateGroupInput;
+};
+
+
+export type MutationDeleteGroupArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -85,6 +92,11 @@ export type MutationRefreshTokenArgs = {
 
 export type MutationRegisterArgs = {
   input: CreateUserInput;
+};
+
+
+export type MutationUpdateGroupArgs = {
+  input: UpdateGroupInput;
 };
 
 export type Query = {
@@ -109,6 +121,12 @@ export type QueryGetGroupMembersArgs = {
 
 export type QueryGetUserArgs = {
   id: Scalars['String']['input'];
+};
+
+export type UpdateGroupInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UserDto = {

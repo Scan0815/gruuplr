@@ -49,9 +49,11 @@ input LoginUserInput {
 
 type Mutation {
   createGroup(input: CreateGroupInput!): GroupDTO!
+  deleteGroup(id: String!): Boolean!
   login(input: LoginUserInput!): AuthResponseDTO!
   refreshToken(refreshToken: String!): AuthResponseDTO!
   register(input: CreateUserInput!): AuthResponseDTO!
+  updateGroup(input: UpdateGroupInput!): GroupDTO!
 }
 
 type Query {
@@ -60,6 +62,12 @@ type Query {
   getGroups: [GroupDTO!]!
   getUser(id: String!): UserDTO!
   me: UserDTO!
+}
+
+input UpdateGroupInput {
+  description: String
+  id: ID!
+  name: String
 }
 
 type UserDTO {

@@ -23,7 +23,7 @@
           "deprecated": false,
           "description": "",
           "source": {
-            "module": "../../../apps/client/src/components/chats/chat-default/chat-default.tsx",
+            "module": "../../../apps/client/src/components/chat/chat-default/chat-default.tsx",
             "symbol": "ChatDefault"
           },
           "attributes": [],
@@ -35,7 +35,7 @@
           "deprecated": false,
           "description": "",
           "source": {
-            "module": "../../../apps/client/src/components/chats/chat-view/chat-view.tsx",
+            "module": "../../../apps/client/src/components/chat/chat-view/chat-view.tsx",
             "symbol": "ChatView"
           },
           "attributes": [
@@ -56,7 +56,7 @@
           "deprecated": false,
           "description": "",
           "source": {
-            "module": "../../../apps/client/src/components/groups/group-create/group-create.tsx",
+            "module": "../../../apps/client/src/components/group/modal/group-create/group-create.tsx",
             "symbol": "GroupCreate"
           },
           "attributes": [],
@@ -68,8 +68,29 @@
           "deprecated": false,
           "description": "",
           "source": {
-            "module": "../../../apps/client/src/components/group-invite/group-invite.tsx",
+            "module": "../../../apps/client/src/components/group/modal/group-invite/group-invite.tsx",
             "symbol": "GroupInvite"
+          },
+          "attributes": [
+            {
+              "name": "group-id",
+              "deprecated": false,
+              "description": "",
+              "required": true,
+              "default": "",
+              "priority": "high"
+            }
+          ],
+          "slots": [],
+          "css": {}
+        },
+        {
+          "name": "group-join",
+          "deprecated": false,
+          "description": "",
+          "source": {
+            "module": "../../../apps/client/src/components/group/modal/group-join/group-join.tsx",
+            "symbol": "GroupJoin"
           },
           "attributes": [
             {
@@ -89,10 +110,31 @@
           "deprecated": false,
           "description": "",
           "source": {
-            "module": "../../../apps/client/src/components/groups/group-list/group-list.tsx",
+            "module": "../../../apps/client/src/components/group/group-list/group-list.tsx",
             "symbol": "GroupList"
           },
           "attributes": [],
+          "slots": [],
+          "css": {}
+        },
+        {
+          "name": "group-update",
+          "deprecated": false,
+          "description": "",
+          "source": {
+            "module": "../../../apps/client/src/components/group/modal/group-update/group-update.tsx",
+            "symbol": "GroupUpdate"
+          },
+          "attributes": [
+            {
+              "name": "group",
+              "deprecated": false,
+              "description": "",
+              "required": false,
+              "default": "",
+              "priority": "high"
+            }
+          ],
           "slots": [],
           "css": {}
         },
@@ -6236,6 +6278,10 @@
             {
               "name": "groupCreated",
               "description": ""
+            },
+            {
+              "name": "groupCreationError",
+              "description": ""
             }
           ]
         },
@@ -6244,6 +6290,21 @@
         },
         {
           "events": []
+        },
+        {
+          "events": []
+        },
+        {
+          "events": [
+            {
+              "name": "groupUpdated",
+              "description": ""
+            },
+            {
+              "name": "groupUpdatedError",
+              "description": ""
+            }
+          ]
         },
         {
           "events": []
@@ -7271,7 +7332,21 @@
           ]
         },
         {
+          "properties": [
+            {
+              "name": "groupId"
+            }
+          ]
+        },
+        {
           "properties": []
+        },
+        {
+          "properties": [
+            {
+              "name": "group"
+            }
+          ]
         },
         {
           "properties": [

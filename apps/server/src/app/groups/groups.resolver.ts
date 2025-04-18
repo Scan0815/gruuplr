@@ -1,7 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { GroupsService } from './groups.service';
-import { CreateGroupInput, GroupDTO, GroupMemberDTO } from '@gruuplr/dtos';
+import { CreateGroupInput, GroupDTO, GroupMemberDTO, UpdateGroupInput } from '@gruuplr/dtos';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { CurrentUser } from '../user/current-user.decorator';
 import { UserDTO } from '@gruuplr/dtos';
@@ -17,6 +17,24 @@ export class GroupsResolver {
     @Args('input') input: CreateGroupInput
   ): Promise<GroupDTO> {
     return this.groupsService.createGroup(user.id, input);
+  }
+
+  @Mutation(() => GroupDTO)
+  @UseGuards(JwtAuthGuard)
+  async updateGroup(
+    @CurrentUser() user: UserDTO,
+    @Args('input') input: UpdateGroupInput
+  ): Promise<GroupDTO> {
+    return this.groupsService.updateGroup(user.id, input);
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(JwtAuthGuard)
+  async deleteGroup(
+    @CurrentUser() user: UserDTO,
+    @Args('id') id: string
+  ): Promise<boolean> {
+    return this.groupsService.deleteGroup(user.id, id);
   }
 
   @Query(() => [GroupDTO])

@@ -37,10 +37,7 @@ export class GroupInviteDTO {
 }
 
 @InputType()
-export class CreateGroupInviteInput extends PickType(GroupInviteDTO, ['invitedUserId', 'groupId'] as const) {
-  @Field(() => ID)
-  override invitedUserId!: string;
-
+export class CreateGroupInviteInput extends PickType(GroupInviteDTO, ['groupId'] as const) {
   @Field(() => ID)
   override groupId!: string;
 }

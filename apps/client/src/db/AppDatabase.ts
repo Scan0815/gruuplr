@@ -1,5 +1,5 @@
 import { User } from '../features/users/user.model';
-import { Group } from '../features/groups/group.model';
+import { Group } from '../features/group/group.model';
 import Dexie, { Table } from 'dexie';
 import { ReplicationRecord } from '../features/replication/replication.model';
 import { ReplicationMiddleware } from './middleware/replication.middleware';

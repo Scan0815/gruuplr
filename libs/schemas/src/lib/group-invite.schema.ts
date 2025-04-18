@@ -19,7 +19,7 @@ export class GroupInvite extends Document {
   @Transform(({ value }) => value?.toString())
   invitedById!: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: User.name, required: true })
+  @Prop({ type: Types.ObjectId, ref: User.name, required: false })
   @Field(() => ID)
   @Expose()
   @Transform(({ value }) => value?.toString())

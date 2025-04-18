@@ -3,9 +3,9 @@ import { ReplicationRecord } from './replication.model';
 import { db } from '../../db/AppDatabase';
 import { AccountGraphQL } from '../account/account.graphql';
 import { AccountService } from '../account/account.service';
-import { GroupService } from '../groups/group.service';
-import { GroupRepository } from '../groups/group.repository';
-import { Group } from '../groups/group.model';
+import { GroupService } from '../group/group.service';
+import { GroupRepository } from '../group/group.repository';
+import { Group } from '../group/group.model';
 import { KeyStoreEntry } from '../keystore/keystore.model';
 import { KeystoreService } from '../keystore/keystore.service';
 import { KeystoreRepository } from '../keystore/keystore.repository';
@@ -15,16 +15,12 @@ export class ReplicationSocketService {
   private socket: Socket;
   private replicationPollingInterval: any;
   private token: string | null = null;
-  private groupService: GroupService;
-  private keystoreService: KeystoreService;
+  private groupRepository = new GroupRepository(db);
+  private groupService = GroupService.getInstance(this.groupRepository);
+  private keystoreService = new KeystoreService(new KeystoreRepository(db));
   private registeredGroups: Set<string> = new Set();
 
   private constructor(private serverUrl: string) {
-    const groupRepository = new GroupRepository(db);
-    const keystoreRepository = new KeystoreRepository(db);
-    this.groupService = new GroupService(groupRepository);
-    this.keystoreService = new KeystoreService(keystoreRepository);
-    
     // Get initial token
     const accountService = AccountService.getInstance();
     this.token = accountService.getToken();
@@ -112,10 +108,10 @@ export class ReplicationSocketService {
       await this.sendPendingReplications();
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', async (error) => {
       console.error('Socket connection error:', error);
       if (error.message === 'Invalid token') {
-        this.handleTokenRefresh();
+        await this.handleTokenRefresh();
       }
     });
 
@@ -140,10 +136,13 @@ export class ReplicationSocketService {
     });
 
     // Listen for group replication updates
-    this.socket.on('groupReplicationUpdate', (data: { groupId: string; timestamp: number }) => {
+    this.socket.on('groupReplicationUpdate', async (data: { groupId: string; timestamp: number }) => {
       console.log('Received group replication update:', data);
       // Request replication data for this group since the timestamp
-      this.requestReplicationSince(localStorage.getItem('lastReplicationRequest') ? parseInt(localStorage.getItem('lastReplicationRequest') as string) : 0);
+      await this.requestReplicationSince(localStorage.getItem('lastReplicationRequest')
+        ? parseInt(localStorage.getItem('lastReplicationRequest') as string)
+        : 0
+      );
     });
 
     // Listen for acknowledgements or other replication-related events
@@ -230,13 +229,31 @@ export class ReplicationSocketService {
           const existingGroup = await this.groupService.getGroupById(groupData.id);
           
           if (record.operation === 'delete') {
-            await this.groupService.deleteGroup(groupData.id);
+            try {
+              await this.groupService.deleteGroup(groupData.id);
+            } catch (error) {
+              console.error('Failed to delete group:', error);
+              throw error;
+            }
           } else if (existingGroup) {
-            // If group exists, update it
-            await this.groupService.updateGroup(groupData.id, groupData);
+            try {
+              // If group exists, update it
+              await this.groupService.updateGroup(groupData.id, groupData);
+            } catch (error) {
+              console.error('Failed to update group:', error);
+              throw error;
+            }
           } else {
-            // If group doesn't exist, create it
-            await this.groupService.createGroup(groupData);
+            try {
+              // If group doesn't exist, create it
+              if (!groupData.name || !groupData.description) {
+                throw new Error('Invalid group data: name and description are required');
+              }
+              await this.groupService.createGroup(groupData.name, groupData.description);
+            } catch (error) {
+              console.error('Failed to create group:', error);
+              throw error;
+            }
           }
           break;
 

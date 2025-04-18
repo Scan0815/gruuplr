@@ -1,5 +1,10 @@
 import { RouterDirection } from '@ionic/core';
-
+export const RemoveFocusFromActiveElement = () => {
+  const activeElement = document.activeElement as HTMLElement;
+  if (activeElement) {
+    activeElement.blur();
+  }
+};
 export const RouterNavigate = async (path: string, direction: RouterDirection = 'forward') => {
   const ionRouterElement: HTMLIonRouterElement | null = document.querySelector('ion-router');
   if (ionRouterElement !== null) {

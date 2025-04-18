@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Request } from '@nestjs/common';
 import { GroupsService } from './groups.service';
-import { CreateGroupInput, GroupDTO } from '@gruuplr/dtos';
+import { CreateGroupInput, GroupDTO, UpdateGroupInput } from '@gruuplr/dtos';
 import { CreateGroupMemberInput, GroupMemberDTO, UpdateGroupMemberInput } from '@gruuplr/dtos';
 import { CreateGroupInviteInput, GroupInviteDTO, UpdateGroupInviteInput } from '@gruuplr/dtos';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -13,6 +13,23 @@ export class GroupsController {
   @Post()
   async createGroup(@Request() req : any, @Body() input: CreateGroupInput): Promise<GroupDTO> {
     return this.groupsService.createGroup(req.user.id, input);
+  }
+
+  @Put(':id')
+  async updateGroup(
+    @Request() req: any,
+    @Param('id') id: string,
+    @Body() input: UpdateGroupInput
+  ): Promise<GroupDTO> {
+    return this.groupsService.updateGroup(req.user.id, { ...input, id });
+  }
+
+  @Delete(':id')
+  async deleteGroup(
+    @Request() req: any,
+    @Param('id') id: string
+  ): Promise<boolean> {
+    return this.groupsService.deleteGroup(req.user.id, id);
   }
 
   @Get()

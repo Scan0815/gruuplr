@@ -15,7 +15,7 @@ export class ReplicationMiddleware implements Middleware<any> {
         // Get the original table.
         const downlevelTable = downlevelDatabase?.table(tableName);
 
-        if(!['groups', 'keystore'].includes(tableName)){
+        if(!['messages'].includes(tableName)){
           return downlevelTable;
         }
 

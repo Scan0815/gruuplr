@@ -214,6 +214,7 @@ export class ReplicationGateway implements OnGatewayConnection, OnGatewayDisconn
       return { success: false, error: 'Unauthenticated' };
     }
 
+    console.log("replication.gateway",data);
     try {
       const invite = await this.groupsService.createInvite(data.groupId, userId);
       return { success: true, inviteCode: invite.inviteCode };
@@ -237,6 +238,8 @@ export class ReplicationGateway implements OnGatewayConnection, OnGatewayDisconn
       return { success: false, error: 'Unauthenticated' };
     }
 
+    console.log("invite to group",data)
+
     try {
       const success = await this.groupsService.useInvite(data.inviteCode, userId);
       if (!success) {
@@ -244,7 +247,7 @@ export class ReplicationGateway implements OnGatewayConnection, OnGatewayDisconn
       }
       return { success: true };
     } catch (error) {
-      console.error('Failed to use group invite:', error);
+      console.error('Failed to use group invite:', error.meesage);
       return { success: false, error: error.message };
     }
   }

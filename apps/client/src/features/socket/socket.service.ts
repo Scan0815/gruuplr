@@ -7,6 +7,8 @@ export class SocketService {
   private constructor(token: string) {
     this.socket = io(this.endpoint, {
       transports: ['websocket'],
+      autoConnect:true,
+      reconnection:true,
       auth: { token },
     });
   }

@@ -30,7 +30,8 @@ export class GraphQLService {
         this.refreshPromise = null;
       }
     } else {
-      await this.refreshPromise;
+      const result = await this.refreshPromise;
+      AccountService.getInstance().updateTokens(result.token,result.refreshToken);
     }
   }
 

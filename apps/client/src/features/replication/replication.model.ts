@@ -1,4 +1,4 @@
-import { Group } from '../groups/group.model';
+import { Group } from '../group/group.model';
 import { KeyStoreEntry } from '../keystore/keystore.model';
 
 export interface ReplicationRecord {

@@ -21,8 +21,7 @@ export class GroupInviteService {
     return null;
   }
 
-  public async useInvite(inviteCode: string): Promise<boolean> {
-    const response = await this.replicationSocketService.useGroupInvite(inviteCode);
-    return response.success;
+  public async useInvite(inviteCode: string): Promise<{ success: boolean; error?: string }> {
+    return await this.replicationSocketService.useGroupInvite(inviteCode);
   }
 } 
